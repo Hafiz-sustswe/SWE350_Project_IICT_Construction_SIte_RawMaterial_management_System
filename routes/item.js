@@ -20,7 +20,7 @@ router.post('/add',auth.authenticateToken,(req,res,next) =>{
 });
 router.get('/get' , auth.authenticateToken , (req,res,next)=>{
    
-    query = "select * from tbl_item ";
+    query = "select * from tbl_requisition_detail ";
     connection.query(query,(err,results) =>{
         if (!err) {
             return res.status(200).json(results);
@@ -42,6 +42,26 @@ router.patch('/update', auth.authenticateToken, (req,res,next) =>{
                 return res.status(404).json({message : "item id not founnd"});
             }
             return res.status(200).json({ message: "Item updated Succesfully" });
+        }
+        else {
+            return res.status(500).json(err);
+
+        }
+    });
+
+})
+
+router.delete('/deleteById', auth.authenticateToken, (req,res,next) =>{
+    let item = req.body;
+    
+    query = "DELETE FROM tbl_item where item_id = ?";
+    connection.query(query,[item.item_id],(err,results) =>{
+        if (!err) {
+            if(results.affectedRows == 0)
+            {
+                return res.status(404).json({message : "item id not founnd"});
+            }
+            return res.status(200).json({ message: "Item deleted Succesfully" });
         }
         else {
             return res.status(500).json(err);
