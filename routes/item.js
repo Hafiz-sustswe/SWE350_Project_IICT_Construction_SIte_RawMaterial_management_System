@@ -5,7 +5,7 @@ const router = express.Router();
 var auth = require('../services/authentication');
 var checkRole = require('../services/checkrole');
 
-router.post('/add',auth.authenticateToken,(req,res,next) =>{
+router.post('/add',(req,res,next) =>{
     let item = req.body;
     query = "insert into tbl_item(item_id,item_name,item_price) values(?,?,?)";
     connection.query(query,[item.item_id,item.item_name,item.item_price],(err,results) =>{
