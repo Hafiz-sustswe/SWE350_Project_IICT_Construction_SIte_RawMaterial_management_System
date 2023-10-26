@@ -4,7 +4,7 @@
 
 # **AUTH**
 
-## Endpoint: POST  http://localhost:5000/auth/signup
+## Endpoint: POST  https://icsrmms.vercel.app/auth/signup
 
 **Description:** This endpoint is used to sign up and create a new user.
 **Description:** It will send an email to the user email that is used to sign up and the mail saying that signup is successfull and wait for admin approval.
@@ -22,7 +22,7 @@
 ```
 
 
-## Endpoint: POST http://localhost:5000/auth/login
+## Endpoint: POST https://icsrmms.vercel.app/auth/login
 
 **Description:** This endpoint is used to sign in user.
 
@@ -56,7 +56,7 @@
 
 # **USERS**
 
-## Endpoint: GET http://localhost:5000/AllUser
+## Endpoint: GET https://icsrmms.vercel.app/AllUser
 
 **Description:** This endpoint is used to retrieve a list of users.
 
@@ -92,7 +92,7 @@
 
 ```
 
-## Endpoint: GET http://localhost:5000/userById
+## Endpoint: GET https://icsrmms.vercel.app/userById
 
 **Description:** This endpoint is used to retrieve a single user by their ID.
 
@@ -118,7 +118,7 @@
 ```
 
 
-## Endpoint: PATCH http://localhost:5000/approveUser
+## Endpoint: PATCH https://icsrmms.vercel.app/approveUser
 
 **Description:** This endpoint allows to approve a user .
 
@@ -140,7 +140,7 @@
 }
 
 
-## Endpoint: DELETE http://localhost:5000/deleteUserById
+## Endpoint: DELETE https://icsrmms.vercel.app/deleteUserById
 
 **Description:** This endpoint is used to delete a user by their ID.
 
@@ -164,7 +164,7 @@
 
 
 
-## Endpoint: POST http://localhost:5000/changePassword
+## Endpoint: POST https://icsrmms.vercel.app/changePassword
 
 **Description:** This endpoint is used to let  a user to change their password  by their old password and new password.
 
@@ -188,7 +188,7 @@
 
 
 
-## Endpoint: POST http://localhost:5000/forgotPassword
+## Endpoint: POST https://icsrmms.vercel.app/forgotPassword
 
 **Description:** This endpoint is used to let  a user to retrice  their password  by giving their mail and get a e-mail to that mail with the password and login credentials.
 

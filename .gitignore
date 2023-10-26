@@ -11,3 +11,4 @@ logs/
 # Build files
 build/
 dist/
+.vercel

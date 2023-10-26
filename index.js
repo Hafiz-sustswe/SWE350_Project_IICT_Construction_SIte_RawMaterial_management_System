@@ -14,6 +14,11 @@ app.use(cors());
 app.use(express.urlencoded({extended : true}));
 app.use(express.json());
 app.use('/',userRoutes);
+
+app.get("/", (req, res) => {
+    res.send("You can create ToDo here!");
+  });
+  
 app.use('/item',itemRoutes);
 app.use('/requisition',requisitionRoutes);
 app.use('/tender',tenderRoutes);

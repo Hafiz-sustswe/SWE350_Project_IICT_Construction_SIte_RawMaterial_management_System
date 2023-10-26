@@ -1,23 +1,14 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 require('dotenv');
 var connection = mysql.createConnection({
-    port : process.env.DB_PORT,
-    host: process.env.DB_HOST,
-    user : process.env.DB_USERNAME,
-    password : process.env.DB_PASSWORD,
-    database : process.env.DB_NAME
+    port : "59410",
+    host: "viaduct.proxy.rlwy.net",
+    user : "root",
+    password :"gCh1AFAdEC5bH3Af3E55hC6BHageb4b1",
+    database :"railway"
 
 });
 
-connection.connect((err) =>{
-    if(!err)
-    {
-        console.log('connected');
 
-    }
-    else
-    {
-        console.log(err);
-    }
-});
 module.exports = connection;
+
