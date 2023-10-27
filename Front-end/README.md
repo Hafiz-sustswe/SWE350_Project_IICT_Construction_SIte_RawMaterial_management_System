@@ -20,6 +20,12 @@
 }
 
 ```
+```json
+{
+  "message": "A verification Mail sent to your mail",
+ 
+}
+```
 
 
 ## Endpoint: POST https://icsrmms.vercel.app/auth/login
