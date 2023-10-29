@@ -25,7 +25,7 @@ router.post('/signup', async (req, res) => {
     connection.query(query, [user.ex_email], (err, results) => {
         if (!err) {
             if (results.length <= 0) {
-                query = "insert into tbl_user(ex_name,ex_contactNO,ex_email,ex_password,status,role_id) values(?,?,?,?,'true',1);"
+                query = "insert into tbl_user(ex_name,ex_contactNO,ex_email,ex_password,status,role_id) values(?,?,?,?,'true',4);"
                 connection.query(query, [user.ex_name, user.ex_contactNO, user.ex_email, user.ex_password], (err, result) => {
                     if (!err) {
                         // Assuming ex_id is the primary key or auto-incremented ID
@@ -40,7 +40,7 @@ router.post('/signup', async (req, res) => {
                             subject: "Signup Successful",
                             html:
                                 "<p>Thanks For Registering with our Website <br> " +
-                                "<br> <a href='http://localhost:8088'>Click Here to Login</a>" +
+                                "<br> <a href='https://icsrmms-two.vercel.app/signin'>Click Here to Login</a>" +
                                 "</p>",
                         };
 

@@ -107,10 +107,10 @@ router.get('/seeProfile', auth.authenticateToken, (req, res, next) => {
     const userId = res.locals.user.ex_id;
     const role = res.locals.user.role;
 
-    var query = "select ex_id , ex_name, ex_email, ex_contactNO, status from tbl_user where ex_id = ?";
+    var query = "SELECT u.ex_id, u.ex_name, u.ex_email, u.ex_contactNO, u.status, r.role_name FROM tbl_user u JOIN roles r ON u.role_id = r.role_id WHERE u.ex_id = ?";
     connection.query(query, [userId], (err, results) => {
         if (!err) {
-            return res.status(200).json(results);
+            return res.status(200).json(results[0]);
         } else {
             return res.status(500).json(err);
         }
@@ -221,7 +221,7 @@ var transporter = nodemailer.createTransport(
         debug: true,
     }
 )
-router.post("/forgotPassword", auth.authenticateToken, (req, res, next) => {
+router.post("/forgotPassword",  (req, res, next) => {
     checkRole.checkRole([1], 'userId', res.locals.user.ex_id)(req, res, next);
 }, (req, res) => {
     const user = req.body;

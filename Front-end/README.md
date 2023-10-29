@@ -74,12 +74,13 @@
 **Response:**
 ```json
 {
-        "ex_id": 6,
-        "ex_name": "Test7",
-        "ex_email": "sadman23091998@gmail.com",
-        "ex_contactNO": 3904034,
-        "status": "true"
-    }
+    "ex_id": 3,
+    "ex_name": "admin",
+    "ex_email": "admin@gmail.com",
+    "ex_contactNO": 23434,
+    "status": "true",
+    "role_name": "Super Admin"
+}
 ```
 
 ## Endpoint: GET https://icsrmms.vercel.app/AllUser
@@ -220,7 +221,6 @@
 
 **Access:** every user has access to this api
 
-**Headers:** `Authorization` : [access_token]
 
 **Request Body:**
 ```json
