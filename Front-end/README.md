@@ -62,6 +62,26 @@
 
 # **USERS**
 
+## Endpoint: GET https://icsrmms.vercel.app/seeProfile
+
+**Description:** This endpoint is used to retrieve a single User's Profile.
+
+**Access:** All user .
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Response:**
+```json
+{
+        "ex_id": 6,
+        "ex_name": "Test7",
+        "ex_email": "sadman23091998@gmail.com",
+        "ex_contactNO": 3904034,
+        "status": "true"
+    }
+```
+
 ## Endpoint: GET https://icsrmms.vercel.app/AllUser
 
 **Description:** This endpoint is used to retrieve a list of users.

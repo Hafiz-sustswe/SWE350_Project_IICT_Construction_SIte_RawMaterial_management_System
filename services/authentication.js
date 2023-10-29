@@ -1,19 +1,26 @@
 require('dotenv').config();
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken'); // Add this line to import the jwt module
+
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
+    
     if (!token) {
         return res.sendStatus(401);
     }
-    jwt.verify(token, process.env.ACCESS_TOKEN, (err, response) => {
+
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
         if (err) {
             console.error(err);
             return res.status(403).json({ message: 'Forbidden' });
         }
-        res.locals = response;  // Set res.locals instead of overwriting it
+        
+        // Set decoded user information in res.locals
+        res.locals.user = decoded;
+        //console.log("Decoded Token:", decoded);
         next();
     });
 }
 
 module.exports = { authenticateToken: authenticateToken };
+

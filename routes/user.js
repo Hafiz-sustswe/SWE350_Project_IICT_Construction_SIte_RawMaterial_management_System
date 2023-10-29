@@ -83,7 +83,9 @@ const { response } = require('..');
 //     })
 // })
 
-router.get('/AllUser', auth.authenticateToken, checkRole.checkRole([1]), (req, res) => {
+router.get('/AllUser', auth.authenticateToken, (req, res, next) => {
+    checkRole.checkRole([1], 'role', res.locals.user.ex_id)(req, res, next);
+}, (req, res) => {
     var query = "select ex_id , ex_name, ex_email,ex_contactNO,status from tbl_user where role_id = 4";
 
     connection.query(query, (err, results) => {
@@ -96,9 +98,30 @@ router.get('/AllUser', auth.authenticateToken, checkRole.checkRole([1]), (req, r
     });
 
 });
+router.get('/seeProfile', auth.authenticateToken, (req, res, next) => {
+    checkRole.checkRole([1], 'userId', res.locals.user.ex_id)(req, res, next);
+}, (req, res) => {
+    // Access user information from res.locals.user
 
 
-router.get('/userById', auth.authenticateToken, checkRole.checkRole([1]), (req, res) => {
+    const userId = res.locals.user.ex_id;
+    const role = res.locals.user.role;
+
+    var query = "select ex_id , ex_name, ex_email, ex_contactNO, status from tbl_user where ex_id = ?";
+    connection.query(query, [userId], (err, results) => {
+        if (!err) {
+            return res.status(200).json(results);
+        } else {
+            return res.status(500).json(err);
+        }
+    });
+});
+
+
+
+router.get('/userById', auth.authenticateToken, (req, res, next) => {
+    checkRole.checkRole([1], 'role', res.locals.user.ex_id)(req, res, next);
+}, (req, res) => {
     const user = req.body;
     var query = "select ex_id , ex_name, ex_email,ex_contactNO,status from tbl_user where ex_id = ?";
 
@@ -112,7 +135,9 @@ router.get('/userById', auth.authenticateToken, checkRole.checkRole([1]), (req, 
     });
 
 });
-router.get('/deleteUserById', auth.authenticateToken, checkRole.checkRole([1]), (req, res) => {
+router.get('/deleteUserById', auth.authenticateToken, (req, res, next) => {
+    checkRole.checkRole([1], 'role', res.locals.user.ex_id)(req, res, next);
+}, (req, res) => {
     const user = req.body;
     var query = "delete  from tbl_user where ex_id = ?";
 
@@ -126,14 +151,18 @@ router.get('/deleteUserById', auth.authenticateToken, checkRole.checkRole([1]), 
     });
 
 });
-router.get('/checkToken', auth.authenticateToken, checkRole.checkRole, (req, res) => {
+router.get('/checkToken', auth.authenticateToken, (req, res, next) => {
+    checkRole.checkRole([1], 'userId', res.locals.user.ex_id)(req, res, next);
+}, (req, res) => {
     return res.status(200).json({ message: "true" });
 
 });
 
 
 
-router.patch('/approveUser', auth.authenticateToken, checkRole.checkRole([1]), (req, res) => {
+router.patch('/approveUser', auth.authenticateToken, (req, res, next) => {
+    checkRole.checkRole([1], 'role', res.locals.user.ex_id)(req, res, next);
+}, (req, res) => {
     let user = req.body;
     var query = "update tbl_user set status = ? where ex_id = ?";
     connection.query(query, [user.status, user.ex_id], (err, results) => {
@@ -152,7 +181,9 @@ router.patch('/approveUser', auth.authenticateToken, checkRole.checkRole([1]), (
 
 })
 
-router.post('/changePassword', auth.authenticateToken, checkRole.checkRole([1,2,3,4]), (req, res) => {
+router.post('/changePassword', auth.authenticateToken, (req, res, next) => {
+    checkRole.checkRole([1], 'userId', res.locals.user.ex_id)(req, res, next);
+}, (req, res) => {
     const user = req.body;
     const email = res.locals.ex_email;
     var query = "select * from tbl_user where ex_email = ? and ex_password = ?";
@@ -190,7 +221,9 @@ var transporter = nodemailer.createTransport(
         debug: true,
     }
 )
-router.post("/forgotPassword", auth.authenticateToken, checkRole.checkRole([1]), (req, res) => {
+router.post("/forgotPassword", auth.authenticateToken, (req, res, next) => {
+    checkRole.checkRole([1], 'userId', res.locals.user.ex_id)(req, res, next);
+}, (req, res) => {
     const user = req.body;
     let query = "select ex_email, ex_password from tbl_user where ex_email=?";
     connection.query(query, [user.ex_email], (err, results) => {
