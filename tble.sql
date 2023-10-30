@@ -1,5 +1,5 @@
 CREATE TABLE tbl_user(
-    ex_id int NOT NULL,
+    ex_id int NOT NULL Auto Increment,
 	ex_name varchar(20),
     ex_contactNO int,
 	ex_email varchar(50),

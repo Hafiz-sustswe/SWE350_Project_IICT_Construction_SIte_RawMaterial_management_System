@@ -235,4 +235,350 @@
 }
 ```
 
+# **ITEM**
 
+## Endpoint:PATCH https://icsrmms.vercel.app/item/addItem
+
+**Description:** This endpoint is used to add a new  item 
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Request Body**
+```json
+{
+    "item_name" : "MS Rod", 
+    "item_id" : "ITEM_0001",
+    "item_price" : 6767.89,
+    "date_added" : "2023-10-26",
+    "supplier_id" : 10
+}
+```
+
+**Response Body**
+```json
+{
+    "message": "Item Added Successfully"
+}
+```
+
+
+
+## Endpoint:PATCH https://icsrmms.vercel.app/item/getItem
+
+**Description:** This endpoint is used to get all the item info
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Response Body**
+```json
+[
+    {
+        "item_id": "ITEM_0005",
+        "item_name": "Balu",
+        "item_price": 6767.89,
+        "date_added": "2023-10-26T00:00:00.000Z",
+        "supplier_id": 10
+    },
+    
+    {
+        "item_id": "ITEM_0007",
+        "item_name": "MS Rod2",
+        "item_price": 6767.89,
+        "date_added": "2023-10-26T00:00:00.000Z",
+        "supplier_id": 10
+    }
+]
+```
+
+
+## Endpoint:PATCH https://icsrmms.vercel.app/item/updateItem
+
+**Description:** This endpoint is used to Update the name of  an item by by id
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Request Body**
+```json
+{
+    "item_name" : "Balu", 
+    "item_id" :  "ITEM_0005"
+
+}
+```
+
+**Response Body**
+```json
+{
+    "message": "Item updated Successfully"
+}
+```
+
+
+
+## Endpoint: DELETE https://icsrmms.vercel.app/item/deleteItemById
+
+**Description:** This endpoint is used to Delete an item by id
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Request Body**
+```json
+{
+
+    "item_id" :  "ITEM_0002"
+
+}
+```
+
+**Response Body**
+```json
+{
+
+  
+    "message": "Item deleted Succesfully"
+
+
+}
+```
+
+# **requisition**
+
+## Endpoint:PATCH https://icsrmms.vercel.app/requisition/addRequisition
+
+**Description:** This endpoint is used to add a new  item 
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Request Body**
+```json
+{
+    "req_creator_id" : 4, 
+     "req_date" : "2023-10-26",
+    "reqitem_id" : "ITEM_0005",
+    "req_qtity" : 6767,
+    "purpose" : "Bathroom e bodna lagbe"
+}
+```
+
+**Response Body**
+```json
+{
+    "message": "Requisition Added Successfully"
+}
+```
+
+
+
+## Endpoint:PATCH https://icsrmms.vercel.app/requisition/getRequisition
+
+**Description:** This endpoint is used to get all the requisition info
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Response Body**
+```json
+[
+    {
+        "req_id": "REQ_0001",
+        "req_creator_id": 4,
+        "req_date": "2023-10-25T18:00:00.000Z",
+        "req_item_id": null,
+        "req_qtity": 6767,
+        "purpose": "hudai dilam rki"
+    }
+]
+```
+
+
+## Endpoint:PATCH https://icsrmms.vercel.app/requisition/updateRequisition
+
+**Description:** This endpoint is used to change the item id of  an req by by requisition id
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Request Body**
+```json
+{
+ 
+    "req_item_id" : "ITEM_0005",
+    "req_id" : "REQ_0001"
+    
+}
+```
+
+**Response Body**
+```json
+{
+    "message": "Requisition updated Successfully"
+}
+```
+
+
+
+## Endpoint: DELETE https://icsrmms.vercel.app/requisition/deleteRequisitionById
+
+**Description:** This endpoint is used to Delete an requisition by id
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Request Body**
+```json
+{
+
+    "item_id" :  "REQ_0002"
+
+}
+```
+
+**Response Body**
+```json
+{
+
+  
+    "message": "Req deleted Succesfully"
+
+
+}
+```
+
+
+# **Tender**
+
+## Endpoint:PATCH https://icsrmms.vercel.app/tender/addTender
+
+**Description:** This endpoint is used to add a new tender
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Request Body**
+```json
+{
+    "tender_creator_id": 3,
+    "tender_date": "2023-12-31",
+    "Project_Name": "IICT Toilet Project",
+    "tender_location": "akhalia boro school,uganda",
+    "tender_item_id": "ITEM_0005",
+    "tender_item_qtity": 100,
+    "tender_deadline": "2023-12-31"
+}
+
+```
+
+**Response Body**
+```json
+{
+    "message": "Tender Added Successfully"
+}
+```
+
+
+
+## Endpoint:PATCH https://icsrmms.vercel.app/requisition/getTender
+
+**Description:** This endpoint is used to get all the Tender info
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Response Body**
+```json
+[
+    {
+        "tender_SLNo": "TENDER_0001",
+        "tender_creator_id": 3,
+        "tender_date": "2023-12-30T18:00:00.000Z",
+        "Project_Name": "Construction Project",
+        "tender_location": "City Center",
+        "tender_item_id": "ITEM_0005",
+        "tender_item_qtity": 100,
+        "tender_deadline": "2023-12-30T18:00:00.000Z"
+    }
+]
+```
+
+
+## Endpoint:PATCH https://icsrmms.vercel.app/requisition/updateTender
+
+**Description:** This endpoint is used to change the Property of  a tender  by Tender id
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Request Body**
+```json
+{
+    "tender_SLNo" : "TENDER_0001",
+    "tender_creator_id": 3,
+    "tender_date": "2023-10-31",
+    "Project_Name": "Construction Project",
+    "tender_location": "City Center",
+    "tender_item_id": "ITEM_0005",
+    "tender_item_qtity": 100,
+    "tender_deadline": "2023-12-31"
+}
+```
+
+**Response Body**
+```json
+{
+    "message": "Tender updated Successfully"
+}
+```
+
+
+
+## Endpoint: DELETE https://icsrmms.vercel.app/tender/deleteTenderBySLNo
+
+**Description:** This endpoint is used to Delete an tender by SL No
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Request Body**
+```json
+{
+    "tender_SLNo" : "TENDER_0002"
+ 
+}
+
+```
+
+**Response Body**
+```json
+{
+    "message": "Tender deleted Successfully"
+}
+```

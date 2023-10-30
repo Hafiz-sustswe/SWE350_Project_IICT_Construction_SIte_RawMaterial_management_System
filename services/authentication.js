@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken'); // Add this line to import the jwt module
 function authenticateToken(req, res, next) {
     const token = req.headers.authorization;
    
-    
     if (!token) {
         return res.sendStatus(401);
     }
@@ -12,6 +11,7 @@ function authenticateToken(req, res, next) {
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
         if (err) {
             console.error(err);
+            
             return res.status(403).json({ message: 'Forbidden' });
         }
         

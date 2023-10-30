@@ -186,30 +186,30 @@ router.post('/changePassword', auth.authenticateToken, (req, res, next) => {
 }, (req, res) => {
     const user = req.body;
     const email = res.locals.ex_email;
-    var query = "select * from tbl_user where ex_email = ? and ex_password = ?";
+
+    // Use parameterized queries to prevent SQL injection
+    const query = "SELECT * FROM tbl_user WHERE ex_email = ? AND ex_password = ?";
+    
     connection.query(query, [email, user.oldPassword], (err, results) => {
         if (!err) {
-            if (results.length <= 0) {
-                return res.status(400).json({ message: "incorrect Old password" });
-            }
-            else if (results[0].ex_password == user.oldPassword) {
-                query = "update tbl_user set ex_password = ? where ex_email = ?";
-                connection.query(query, [user.newPassword, email], (err, results) => {
+            if (results.length === 0) {
+                return res.status(400).json({ message: "Incorrect old password" });
+            } else {
+                const updateQuery = "UPDATE tbl_user SET ex_password = ? WHERE ex_email = ?";
+                connection.query(updateQuery, [user.newPassword, email], (err, updateResults) => {
                     if (!err) {
-                        return res.status(200).json({ message: "password Updated successfully" });
-
+                        // Use 204 status for successful updates with no content in the response body
+                        return res.status(204).send();
+                    } else {
+                        return res.status(500).json({ message: "Failed to update password" });
                     }
-                    else {
-                        return res.status(500).json(err);
-                    }
-                })
+                });
             }
-            else {
-                return res.status(500).json(err);
-            }
+        } else {
+            return res.status(500).json({ message: "Database error" });
         }
-    })
-})
+    });
+});
 
 var transporter = nodemailer.createTransport(
     {
@@ -221,9 +221,8 @@ var transporter = nodemailer.createTransport(
         debug: true,
     }
 )
-router.post("/forgotPassword",  (req, res, next) => {
-    checkRole.checkRole([1], 'userId', res.locals.user.ex_id)(req, res, next);
-}, (req, res) => {
+router.post("/forgotPassword",
+     (req, res) => {
     const user = req.body;
     let query = "select ex_email, ex_password from tbl_user where ex_email=?";
     connection.query(query, [user.ex_email], (err, results) => {
@@ -268,3 +267,4 @@ router.post("/forgotPassword",  (req, res, next) => {
 
 
 module.exports = router;
+

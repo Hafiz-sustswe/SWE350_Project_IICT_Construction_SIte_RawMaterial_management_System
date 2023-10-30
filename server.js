@@ -16,7 +16,7 @@ async function main() {
             if(!err)
             {
                 console.log('Database connected');
-                     //query();
+                    // query();
             }
             else
             {
