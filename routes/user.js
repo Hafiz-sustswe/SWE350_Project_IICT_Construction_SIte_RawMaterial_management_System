@@ -7,6 +7,7 @@ require('dotenv').config();
 const auth = require('../services/authentication');
 const checkRole = require('../services/checkrole');
 
+//ok
 router.get('/AllUser', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const query = "select ex_id , ex_name, ex_email,ex_contactNO,status from tbl_user where role_id = 4";
 
@@ -19,19 +20,7 @@ router.get('/AllUser', auth.authenticateToken, checkRole.checkRole([1], 'role'),
     }
 });
 
-router.get('/seeProfile', auth.authenticateToken, checkRole.checkRole([1], 'userId'), async (req, res) => {
-    const userId = res.locals.user.ex_id;
-
-    const query = "SELECT u.ex_id, u.ex_name, u.ex_email, u.ex_contactNO, u.status, r.role_name FROM tbl_user u JOIN roles r ON u.role_id = r.role_id WHERE u.ex_id = ?";
-    try {
-        const [results] = await connection.promise().query(query, [userId]);
-        return res.status(200).json(results[0]);
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
-    }
-});
-
+//ok
 router.get('/userById', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const user = req.body;
     const query = "select ex_id , ex_name, ex_email,ex_contactNO,status from tbl_user where ex_id = ?";
@@ -45,23 +34,25 @@ router.get('/userById', auth.authenticateToken, checkRole.checkRole([1], 'role')
     }
 });
 
-router.get('/deleteUserById', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+//ok
+router.delete('/deleteUserById', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const user = req.body;
-    const query = "delete  from tbl_user where ex_id = ?";
+    const query = "DELETE FROM tbl_user WHERE ex_id = ?";
 
     try {
         const [results] = await connection.promise().query(query, [user.ex_id]);
-        return res.status(200).json(results);
+        if (results.affectedRows > 0) {
+            return res.status(200).json({ message: "user Deleted successfully" });
+        } else {
+            return res.status(404).json({ message: "User not found" });
+        }
     } catch (error) {
         console.log(error);
-        return res.status(500).json(error);
+        return res.status(500).json({ message: "Internal server error" });
     }
 });
 
-router.get('/checkToken', auth.authenticateToken, checkRole.checkRole([1], 'userId'), (req, res) => {
-    return res.status(200).json({ message: "true" });
-});
-
+//ok
 router.patch('/approveUser', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     let user = req.body;
     const query = "update tbl_user set status = ? where ex_id = ?";
@@ -76,6 +67,30 @@ router.patch('/approveUser', auth.authenticateToken, checkRole.checkRole([1], 'r
         return res.status(500).json(error);
     }
 });
+//---------------------------
+
+//ok
+router.get('/seeProfile', auth.authenticateToken,  async (req, res) => {
+    const userId = res.locals.user.ex_id;
+
+    const query = "SELECT u.ex_id, u.ex_name, u.ex_email, u.ex_contactNO, u.status, r.role_name FROM tbl_user u JOIN roles r ON u.role_id = r.role_id WHERE u.ex_id = ?";
+    try {
+        const [results] = await connection.promise().query(query, [userId]);
+        return res.status(200).json(results[0]);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+});
+
+
+
+//ok
+router.get('/checkToken', auth.authenticateToken, (req, res) => {
+    return res.status(200).json({ message: "true" });
+});
+
+//ok
 router.post('/changePassword', auth.authenticateToken, async (req, res) => {
     const user = req.body;
     const email = res.locals.user.ex_email;
@@ -109,6 +124,7 @@ var transporter = nodemailer.createTransport(
     }
 );
 
+//ok
 router.post("/forgotPassword", async (req, res) => {
     const user = req.body;
     let query = "select ex_email, ex_password from tbl_user where ex_email=?";
@@ -149,5 +165,4 @@ router.post("/forgotPassword", async (req, res) => {
         return res.status(500).json({ error });
     }
 });
-
 module.exports = router;

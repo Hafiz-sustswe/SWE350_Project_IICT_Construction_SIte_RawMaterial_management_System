@@ -25,7 +25,7 @@ router.post('/signup', async (req, res) => {
         const [results] = await connection.promise().query(query, [user.ex_email]);
 
         if (results.length <= 0) {
-            query = "insert into tbl_user(ex_name,ex_contactNO,ex_email,ex_password,status,role_id) values(?,?,?,?,'true',4);";
+            query = "insert into tbl_user(ex_name,ex_contactNO,ex_email,ex_password,status,role_id) values(?,?,?,?,'true',1);";
             
             const [result] = await connection.promise().query(query, [user.ex_name, user.ex_contactNO, user.ex_email, user.ex_password]);
             const userId = result.insertId;

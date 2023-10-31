@@ -31,6 +31,7 @@ async function generateItemId() {
 }
 
 // API endpoint to add an item
+//ok
 router.post('/addItem', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const item = req.body;
 
@@ -52,6 +53,7 @@ router.post('/addItem', auth.authenticateToken, checkRole.checkRole([1], 'role')
 // ...
 
 // API endpoint to get items
+//ok
 router.get('/getItem', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const query = "SELECT * FROM tbl_item";
     try {
@@ -64,6 +66,7 @@ router.get('/getItem', auth.authenticateToken, checkRole.checkRole([1], 'role'),
 });
 
 // API endpoint to update an item
+//ok
 router.patch('/updateItem', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const item = req.body;
 
@@ -81,6 +84,7 @@ router.patch('/updateItem', auth.authenticateToken, checkRole.checkRole([1], 'ro
 });
 
 // API endpoint to delete an item by ID
+//ok
 router.delete('/deleteItemById', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const item = req.body;
 

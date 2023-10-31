@@ -156,7 +156,7 @@
 **Request Body:**
 
 {
-    "ex_id" : 6
+    "ex_id" : 6,
     "status" : "true"
 }
 **Response Body:**

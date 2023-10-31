@@ -11,8 +11,8 @@ function checkRole(requiredRoles, checkType, additionalParam) {
         const userRole = res.locals.user.role_id; // Corrected role extraction
         const userId = res.locals.user.ex_id; // Get the user ID from the decoded token
 
-        // console.log('User Role:', userRole);
-        // console.log('User ID:', userId);
+         console.log('User Role:', userRole);
+         console.log('User ID:', userId);
 
         if (checkType === 'role' && requiredRoles.includes(userRole)) {
             next(); // User has the required role, proceed to the next middleware
