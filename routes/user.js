@@ -11,91 +11,24 @@ const { response } = require('..');
 
 
 
-// router.post('/signup', async (req, res) => {
-//     let user = req.body;
-//     query = "select ex_email,ex_password,role_id,status from tbl_user where ex_email = ?"
-//     connection.query(query, [user.ex_email], (err, results) => {
-//         if (!err) {
-//             if (results.length <= 0) {
-//                 query = "insert into tbl_user(ex_name,ex_contactNO,ex_email,ex_password,status,role_id) values(?,?,?,?,'true',1);"
-//                 connection.query(query, [user.ex_name, user.ex_contactNO, user.ex_email, user.ex_password], (err, result) => {
-//                     if (!err) {
-//                        let mailOptions = {
-//                         from: process.env.EMAIL,
-//                         to: user.ex_email,
-//                         subject: "Signup Successfull",
-//                         html:
-//                           "<p>Thanks For Registering with our Website <br> " +
-
-//                           "<br> <a href='http://localhost:8088'>Click Here to Login</a>" +
-//                           "</p>",
-//                       };
-//                       transporter.sendMail(mailOptions, (error, info) => {
-//                         if (error) {
-//                           console.log(error);
-//                         } else {
-//                           console.log(info.response);
-//                           console.log(" \n Email sent");
-//                           return res.status(200).json({
-//                             message: "SuccessFully Registered With Us",
-//                           });
-//                         }
-//                       });
-
-//                     }
-//                 })
-//             }
-//             else
-//                 return res.status(400).json({ message: "Email Already Exist" });
-//         }
-//         else {
-//             return res.status(500).json(err);
-//         }
-
-//     });
-// })
-
-
-// router.post('/login', (req, res) => {
-//     const user = req.body;
-//     query = "select ex_email,ex_password,role_id,status from tbl_user where ex_email = ?"
-//     connection.query(query, [user.ex_email ], (err, result) => {
-//         if (!err) {
-//             if (result.length <= 0 || result[0].ex_password != user.ex_password) {
-//                 return res.status(401).json({ message: "Incorrect username or password" });
-
-//             } else if (result[0].status == 'false') {
-//                 return res.status(401).json({ message: "wait for admin approval" });
-//             }
-//             else if (result[0].ex_password == user.ex_password) {
-//                 const response = { ex_email: result[0].ex_email, role_id: result[0].role_id }
-//                 const accessToken = jwt.sign(response, process.env.ACCESS_TOKEN, { expiresIn: '8h' })
-//                 res.status(200).json({ token: accessToken });
-//             }
-
-//             else {
-//                 return res.status(400).json({ message: "Something went wrong" });
-//             }
-//         }
-//         else {
-//             return res.status(500).json(err);
-//         }
-//     })
-// })
 
 router.get('/AllUser', auth.authenticateToken, (req, res, next) => {
     checkRole.checkRole([1], 'role', res.locals.user.ex_id)(req, res, next);
 }, (req, res) => {
     var query = "select ex_id , ex_name, ex_email,ex_contactNO,status from tbl_user where role_id = 4";
 
-    connection.query(query, (err, results) => {
-        if (!err) {
-            return res.status(200).json(results);
-        }
-        else {
-            return res.status(500).json(err);
-        }
-    });
+    try {
+        connection.query(query, (err, results) => {
+            if (!err) {
+                return res.status(200).json(results);
+            }
+            else {
+                return res.status(500).json(err);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+    }
 
 });
 router.get('/seeProfile', auth.authenticateToken, (req, res, next) => {
@@ -108,6 +41,7 @@ router.get('/seeProfile', auth.authenticateToken, (req, res, next) => {
     const role = res.locals.user.role;
 
     var query = "SELECT u.ex_id, u.ex_name, u.ex_email, u.ex_contactNO, u.status, r.role_name FROM tbl_user u JOIN roles r ON u.role_id = r.role_id WHERE u.ex_id = ?";
+   try {
     connection.query(query, [userId], (err, results) => {
         if (!err) {
             return res.status(200).json(results[0]);
@@ -115,6 +49,9 @@ router.get('/seeProfile', auth.authenticateToken, (req, res, next) => {
             return res.status(500).json(err);
         }
     });
+   } catch (error) {
+    console.log(error);
+   }
 });
 
 
@@ -125,14 +62,18 @@ router.get('/userById', auth.authenticateToken, (req, res, next) => {
     const user = req.body;
     var query = "select ex_id , ex_name, ex_email,ex_contactNO,status from tbl_user where ex_id = ?";
 
-    connection.query(query, [user.ex_id], (err, results) => {
-        if (!err) {
-            return res.status(200).json(results);
-        }
-        else {
-            return res.status(500).json(err);
-        }
-    });
+    try {
+        connection.query(query, [user.ex_id], (err, results) => {
+            if (!err) {
+                return res.status(200).json(results);
+            }
+            else {
+                return res.status(500).json(err);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+    }
 
 });
 router.get('/deleteUserById', auth.authenticateToken, (req, res, next) => {
@@ -141,14 +82,18 @@ router.get('/deleteUserById', auth.authenticateToken, (req, res, next) => {
     const user = req.body;
     var query = "delete  from tbl_user where ex_id = ?";
 
-    connection.query(query, [user.ex_id], (err, results) => {
-        if (!err) {
-            return res.status(200).json(results);
-        }
-        else {
-            return res.status(500).json(err);
-        }
-    });
+    try {
+        connection.query(query, [user.ex_id], (err, results) => {
+            if (!err) {
+                return res.status(200).json(results);
+            }
+            else {
+                return res.status(500).json(err);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+    }
 
 });
 router.get('/checkToken', auth.authenticateToken, (req, res, next) => {
@@ -165,6 +110,7 @@ router.patch('/approveUser', auth.authenticateToken, (req, res, next) => {
 }, (req, res) => {
     let user = req.body;
     var query = "update tbl_user set status = ? where ex_id = ?";
+   try {
     connection.query(query, [user.status, user.ex_id], (err, results) => {
         if (!err) {
             if (results.affetedRows == 0) {
@@ -178,6 +124,9 @@ router.patch('/approveUser', auth.authenticateToken, (req, res, next) => {
             return res.status(500).json(err);
         }
     })
+   } catch (error) {
+    console.log(error);
+   }
 
 })
 
@@ -189,7 +138,8 @@ router.post('/changePassword', auth.authenticateToken, (req, res, next) => {
 
     // Use parameterized queries to prevent SQL injection
     const query = "SELECT * FROM tbl_user WHERE ex_email = ? AND ex_password = ?";
-    
+    try {
+        
     connection.query(query, [email, user.oldPassword], (err, results) => {
         if (!err) {
             if (results.length === 0) {
@@ -209,6 +159,9 @@ router.post('/changePassword', auth.authenticateToken, (req, res, next) => {
             return res.status(500).json({ message: "Database error" });
         }
     });
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 var transporter = nodemailer.createTransport(
@@ -225,42 +178,46 @@ router.post("/forgotPassword",
      (req, res) => {
     const user = req.body;
     let query = "select ex_email, ex_password from tbl_user where ex_email=?";
-    connection.query(query, [user.ex_email], (err, results) => {
-        if (!err) {
-            if (results.length <= 0) {
-                return res.status(200).json({
-                    message: "Password Successfully sent to your Email",
-                });
+    try {
+        connection.query(query, [user.ex_email], (err, results) => {
+            if (!err) {
+                if (results.length <= 0) {
+                    return res.status(200).json({
+                        message: "Password Successfully sent to your Email",
+                    });
+                } else {
+                    let mailOptions = {
+                        from: process.env.EMAIL,
+                        to: results[0].ex_email,
+                        subject: "Password retrieval by ICSRMMS",
+                        html:
+                            "<p>Your login details for IICT Construction Site Raw <br> Email: " +
+                            results[0].ex_email +
+                            "<br> Password: " +
+                            results[0].ex_password +
+                            "<br> <a href='http://localhost:8088'>Click Here to Login</a>" +
+                            "</p>",
+                    };
+    
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log(info.response);
+                            console.log(" \n Email sent");
+                            return res.status(200).json({
+                                message: "Password sent to your email",
+                            });
+                        }
+                    });
+                }
             } else {
-                let mailOptions = {
-                    from: process.env.EMAIL,
-                    to: results[0].ex_email,
-                    subject: "Password retrieval by ICSRMMS",
-                    html:
-                        "<p>Your login details for IICT Construction Site Raw <br> Email: " +
-                        results[0].ex_email +
-                        "<br> Password: " +
-                        results[0].ex_password +
-                        "<br> <a href='http://localhost:8088'>Click Here to Login</a>" +
-                        "</p>",
-                };
-
-                transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log(info.response);
-                        console.log(" \n Email sent");
-                        return res.status(200).json({
-                            message: "Password sent to your email",
-                        });
-                    }
-                });
+                return res.status(500).json({ err });
             }
-        } else {
-            return res.status(500).json({ err });
-        }
-    });
+        });
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 

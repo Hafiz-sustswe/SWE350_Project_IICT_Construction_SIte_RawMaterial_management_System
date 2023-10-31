@@ -237,7 +237,7 @@
 
 # **ITEM**
 
-## Endpoint:PATCH https://icsrmms.vercel.app/item/addItem
+## Endpoint:POST https://icsrmms.vercel.app/item/addItem
 
 **Description:** This endpoint is used to add a new  item 
 
@@ -266,7 +266,7 @@
 
 
 
-## Endpoint:PATCH https://icsrmms.vercel.app/item/getItem
+## Endpoint:GET https://icsrmms.vercel.app/item/getItem
 
 **Description:** This endpoint is used to get all the item info
 
@@ -355,7 +355,7 @@
 
 # **requisition**
 
-## Endpoint:PATCH https://icsrmms.vercel.app/requisition/addRequisition
+## Endpoint:POST https://icsrmms.vercel.app/requisition/addRequisition
 
 **Description:** This endpoint is used to add a new  item 
 
@@ -384,7 +384,7 @@
 
 
 
-## Endpoint:PATCH https://icsrmms.vercel.app/requisition/getRequisition
+## Endpoint:GET https://icsrmms.vercel.app/requisition/getRequisition
 
 **Description:** This endpoint is used to get all the requisition info
 
@@ -468,7 +468,7 @@
 
 # **Tender**
 
-## Endpoint:PATCH https://icsrmms.vercel.app/tender/addTender
+## Endpoint:POST https://icsrmms.vercel.app/tender/addTender
 
 **Description:** This endpoint is used to add a new tender
 
@@ -500,7 +500,7 @@
 
 
 
-## Endpoint:PATCH https://icsrmms.vercel.app/requisition/getTender
+## Endpoint:GET https://icsrmms.vercel.app/requisition/getTender
 
 **Description:** This endpoint is used to get all the Tender info
 
