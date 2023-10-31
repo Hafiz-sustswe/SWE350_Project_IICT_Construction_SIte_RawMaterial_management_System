@@ -250,7 +250,6 @@
 ```json
 {
     "item_name" : "MS Rod", 
-    "item_id" : "ITEM_0001",
     "item_price" : 6767.89,
     "date_added" : "2023-10-26",
     "supplier_id" : 10
@@ -371,7 +370,7 @@
      "req_date" : "2023-10-26",
     "reqitem_id" : "ITEM_0005",
     "req_qtity" : 6767,
-    "purpose" : "Bathroom e bodna lagbe"
+    "purpose" : "Bathroom"
 }
 ```
 

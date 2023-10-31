@@ -1,142 +1,103 @@
 const express = require('express');
 const connection = require('../connection');
 const router = express.Router();
-//const jwt = require('jsonwebtoken');
-var auth = require('../services/authentication');
-var checkRole = require('../services/checkrole');
+const auth = require('../services/authentication');
+const checkRole = require('../services/checkrole');
 
-
-// Global variable to store the last used item ID
 // Function to retrieve the last used item ID from the database
-function getLastItemIdFromDatabase(callback) {
+async function getLastItemIdFromDatabase() {
     const query = "SELECT MAX(CAST(SUBSTRING(item_id, 6) AS UNSIGNED)) AS lastId FROM tbl_item";
-   try {
-    connection.query(query, (err, results) => {
-        if (!err) {
-            const lastId = results[0].lastId || 0;
-            callback(lastId);
-        } else {
-            console.error(err);
-            callback(0);
-        }
-    });
-   } catch (error) {
-    console.log(error);
-   }
+    try {
+        const [results] = await connection.promise().query(query);
+        const lastId = results[0].lastId || 0;
+        return lastId;
+    } catch (error) {
+        console.error(error);
+        return 0;
+    }
 }
 
 // Function to generate a sequential Item ID
-function generateItemId(callback) {
+async function generateItemId() {
     // Retrieve the last used item ID from the database
-    getLastItemIdFromDatabase((lastId) => {
-        lastItemId = lastId;
+    const lastId = await getLastItemIdFromDatabase();
 
-        // Increment the last used item ID
-        lastItemId++;
+    // Increment the last used item ID
+    const newItemId = lastId + 1;
 
-        // Convert the incremented ID to a string
-        const itemId = `ITEM_${lastItemId.toString().padStart(4, '0')}`;
-
-        // Callback with the generated item ID
-        callback(itemId);
-    });
+    // Convert the incremented ID to a string
+    const itemId = `ITEM_${newItemId.toString().padStart(4, '0')}`;
+    return itemId;
 }
 
 // API endpoint to add an item
-
-router.post('/addItem', auth.authenticateToken, (req, res, next) => {
-    checkRole.checkRole([1], 'role')(req, res, next);
-}, (req, res, next) => {
+router.post('/addItem', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const item = req.body;
 
-    // Generate Item ID using the function
-    generateItemId((itemId) => {
+    try {
+        // Generate Item ID using the function
+        const itemId = await generateItemId();
+
         // Use the generated ID in the SQL query
         const query = "INSERT INTO tbl_item (item_id, item_name, item_price, date_added, supplier_id) VALUES (?, ?, ?, ?, ?)";
-        try {
-            connection.query(query, [itemId, item.item_name, item.item_price, item.date_added, item.supplier_id], (err, results) => {
-                if (!err) {
-                    return res.status(200).json({ message: "Item Added Successfully" });
-                } else {
-                    return res.status(500).json(err);
-                }
-            });
-        } catch (error) {
-            console.log(error);
+        const [results] = await connection.promise().query(query, [itemId, item.item_name, item.item_price, item.date_added, item.supplier_id]);
+
+        return res.status(200).json({ message: "Item Added Successfully" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(error);
+    }
+});
+
+// ...
+
+// API endpoint to get items
+router.get('/getItem', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+    const query = "SELECT * FROM tbl_item";
+    try {
+        const [results] = await connection.promise().query(query);
+        return res.status(200).json(results);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(error);
+    }
+});
+
+// API endpoint to update an item
+router.patch('/updateItem', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+    const item = req.body;
+
+    const query = "UPDATE tbl_item SET item_name = ? WHERE item_id = ?";
+    try {
+        const [results] = await connection.promise().query(query, [item.item_name, item.item_id]);
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ message: "Item ID not found" });
         }
-    });
+        return res.status(200).json({ message: "Item updated successfully" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(error);
+    }
 });
 
+// API endpoint to delete an item by ID
+router.delete('/deleteItemById', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+    const item = req.body;
 
-router.get('/getItem', auth.authenticateToken, (req, res, next) => {
-    checkRole.checkRole([1], 'role')(req, res, next);
-}, (req, res, next) => {
-
-    query = "select * from tbl_item ";
+    const query = "DELETE FROM tbl_item WHERE item_id = ?";
     try {
-        connection.query(query, (err, results) => {
-            if (!err) {
-                return res.status(200).json(results);
-            }
-            else {
-                return res.status(500).json(err);
-    
-            }
-        });
-        
+        const [results] = await connection.promise().query(query, [item.item_id]);
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ message: "Item ID not found" });
+        }
+        return res.status(200).json({ message: "Item deleted successfully" });
     } catch (error) {
-        console.log(error);
-    }
-})
-router.patch('/updateItem', auth.authenticateToken, (req, res, next) => {
-    
-    checkRole.checkRole([1], 'role')(req, res, next);
-}, (req, res, next) => {
-   
-    let item = req.body;
-
-    query = "update tbl_item set item_name = ? where item_id = ?";
-    try {
-        connection.query(query, [item.item_name, item.item_id], (err, results) => {
-            if (!err) {
-                if (results.affectedRows == 0) {
-                    return res.status(404).json({ message: "item id not found" });
-                }
-                return res.status(200).json({ message: "Item updated Successfully" });
-            } else {
-                return res.status(500).json(err);
-            }
-        });
-    } catch (error) {
-        console.log(error);
+        console.error(error);
+        return res.status(500).json(error);
     }
 });
 
 
-router.delete('/deleteItemById', auth.authenticateToken, (req, res, next) => {
-    
-    checkRole.checkRole([1], 'role')(req, res, next);
-}, (req, res, next) => {
-    let item = req.body;
 
-    query = "DELETE FROM tbl_item where item_id = ?";
-    try {
-        connection.query(query, [item.item_id], (err, results) => {
-            if (!err) {
-                if (results.affectedRows == 0) {
-                    return res.status(404).json({ message: "item id not founnd" });
-                }
-                return res.status(200).json({ message: "Item deleted Succesfully" });
-            }
-            else {
-                return res.status(500).json(err);
-    
-            }
-        });
-    } catch (error) {
-        console.log(error);
-    }
-
-})
 
 module.exports = router;
