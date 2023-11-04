@@ -5,7 +5,28 @@ const router = express.Router();
 var auth = require('../services/authentication');
 var checkRole = require('../services/checkrole');
 
+//date generation
+function getCurrentDateTime() {
+    const now = new Date();
+    
+    // Format the date to match the expected format in your database
+    const formattedDate = `${now.getFullYear()}-${padZero(now.getMonth() + 1)}-${padZero(now.getDate())}`;
+    const formattedTime = `${padZero(now.getHours())}:${padZero(now.getMinutes())}:${padZero(now.getSeconds())}`;
+  
+    // Combine date and time
+    const dateTimeString = `${formattedDate} ${formattedTime}`;
+  
+    return dateTimeString;
+  }
+  
+  function padZero(num) {
+    return num.toString().padStart(2, '0');
+  }
+  
+
+//id genration
 let lastRequisitionId = 0;
+
 
 async function getLastRequisitionIdFromDatabase() {
     const query = "SELECT MAX(CAST(SUBSTRING(req_id, 5) AS UNSIGNED)) AS lastId FROM tbl_requisition_detail";
@@ -39,8 +60,14 @@ router.post('/addRequisition', auth.authenticateToken, checkRole.checkRole([1], 
             return res.status(500).json({ message: "Failed to generate requisition ID" });
         }
 
+        // Access req_creator_id from the decoded token
+        const req_creator_id = res.locals.user.ex_id;
+
+        // Assuming you have a function getCurrentDateTime() to get the current date and time
+        const req_date = getCurrentDateTime();
+
         const query = "INSERT INTO tbl_requisition_detail (req_id, req_creator_id, req_date, req_item_id, req_qtity, purpose) VALUES (?, ?, ?, ?, ?, ?)";
-        const [results] = await connection.promise().query(query, [reqId, requisition.req_creator_id, requisition.req_date, requisition.req_item_id, requisition.req_qtity, requisition.purpose]);
+        const [results] = await connection.promise().query(query, [reqId, req_creator_id, req_date, requisition.req_item_id, requisition.req_qtity, requisition.purpose]);
 
         return res.status(200).json({ message: "Requisition Added Successfully" });
     } catch (error) {
@@ -48,6 +75,7 @@ router.post('/addRequisition', auth.authenticateToken, checkRole.checkRole([1], 
         return res.status(500).json(error);
     }
 });
+
 
 // API endpoint to update a requisition
 router.patch('/updateRequisition', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
@@ -85,7 +113,7 @@ router.delete('/deleteRequisitionById', auth.authenticateToken, checkRole.checkR
 
 // API endpoint to get requisitions
 router.get('/getRequisition', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    const query = "SELECT * FROM tbl_requisition_detail";
+    const query = "SELECT rd.req_id, u.ex_name AS req_creator_name, rd.req_date, i.item_name AS req_item_name, rd.req_qtity, rd.purpose FROM tbl_requisition_detail rd JOIN tbl_user u ON rd.req_creator_id = u.ex_id JOIN tbl_item i ON rd.req_item_id = i.item_id;";
     try {
         const [results] = await connection.promise().query(query);
         return res.status(200).json(results);

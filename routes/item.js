@@ -4,6 +4,25 @@ const router = express.Router();
 const auth = require('../services/authentication');
 const checkRole = require('../services/checkrole');
 
+function getCurrentDateTime() {
+    const now = new Date();
+    
+    // Format the date to match the expected format in your database
+    const formattedDate = `${now.getFullYear()}-${padZero(now.getMonth() + 1)}-${padZero(now.getDate())}`;
+    const formattedTime = `${padZero(now.getHours())}:${padZero(now.getMinutes())}:${padZero(now.getSeconds())}`;
+  
+    // Combine date and time
+    const dateTimeString = `${formattedDate} ${formattedTime}`;
+  
+    return dateTimeString;
+  }
+  
+  function padZero(num) {
+    return num.toString().padStart(2, '0');
+  }
+  
+
+  
 // Function to retrieve the last used item ID from the database
 async function getLastItemIdFromDatabase() {
     const query = "SELECT MAX(CAST(SUBSTRING(item_id, 6) AS UNSIGNED)) AS lastId FROM tbl_item";
@@ -38,10 +57,10 @@ router.post('/addItem', auth.authenticateToken, checkRole.checkRole([1], 'role')
     try {
         // Generate Item ID using the function
         const itemId = await generateItemId();
-
+        const date_added = getCurrentDateTime();
         // Use the generated ID in the SQL query
-        const query = "INSERT INTO tbl_item (item_id, item_name, item_price, date_added, supplier_id) VALUES (?, ?, ?, ?, ?)";
-        const [results] = await connection.promise().query(query, [itemId, item.item_name, item.item_price, item.date_added, item.supplier_id]);
+        const query = "INSERT INTO tbl_item (item_id, item_name, item_price, date_added) VALUES (?, ?, ?, ?)";
+        const [results] = await connection.promise().query(query, [itemId, item.item_name, item.item_price,date_added, item.supplier_id]);
 
         return res.status(200).json({ message: "Item Added Successfully" });
     } catch (error) {

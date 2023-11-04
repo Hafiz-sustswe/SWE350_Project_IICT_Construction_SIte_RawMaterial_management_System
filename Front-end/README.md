@@ -249,10 +249,8 @@
 **Request Body**
 ```json
 {
-    "item_name" : "MS Rod", 
-    "item_price" : 6767.89,
-    "date_added" : "2023-10-26",
-    "supplier_id" : 10
+    "item_name" : "Bodna", 
+    "item_price" : 6767.89
 }
 ```
 
@@ -366,9 +364,7 @@
 **Request Body**
 ```json
 {
-    "req_creator_id" : 4, 
-     "req_date" : "2023-10-26",
-    "reqitem_id" : "ITEM_0005",
+    "req_item_id" : "ITEM_0005",
     "req_qtity" : 6767,
     "purpose" : "Bathroom"
 }
@@ -395,13 +391,13 @@
 **Response Body**
 ```json
 [
-    {
-        "req_id": "REQ_0001",
-        "req_creator_id": 4,
+   {
+        "req_id": "REQ_0002",
+        "req_creator_name": "admin",
         "req_date": "2023-10-25T18:00:00.000Z",
-        "req_item_id": null,
-        "req_qtity": 6767,
-        "purpose": "hudai dilam rki"
+        "req_item_name": "MS Rod2",
+        "req_qtity": 100,
+        "purpose": "hudai"
     }
 ]
 ```
@@ -479,8 +475,6 @@
 **Request Body**
 ```json
 {
-    "tender_creator_id": 3,
-    "tender_date": "2023-12-31",
     "Project_Name": "IICT Toilet Project",
     "tender_location": "akhalia boro school,uganda",
     "tender_item_id": "ITEM_0005",
@@ -499,7 +493,7 @@
 
 
 
-## Endpoint:GET https://icsrmms.vercel.app/requisition/getTender
+## Endpoint:GET https://icsrmms.vercel.app/tender/getTender
 
 **Description:** This endpoint is used to get all the Tender info
 
@@ -511,13 +505,14 @@
 **Response Body**
 ```json
 [
+    
     {
         "tender_SLNo": "TENDER_0001",
-        "tender_creator_id": 3,
-        "tender_date": "2023-12-30T18:00:00.000Z",
+        "creator_name": "admin",
+        "tender_date": "2023-10-30T18:00:00.000Z",
         "Project_Name": "Construction Project",
         "tender_location": "City Center",
-        "tender_item_id": "ITEM_0005",
+        "item_name": "Balu",
         "tender_item_qtity": 100,
         "tender_deadline": "2023-12-30T18:00:00.000Z"
     }
