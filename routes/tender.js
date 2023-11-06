@@ -29,8 +29,6 @@ async function generateTenderId() {
         return null;
     }
 }
-
-// API endpoint to add a tender
 router.post('/addTender', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const { requisition_id, deadline } = req.body;
 
@@ -50,16 +48,14 @@ router.post('/addTender', auth.authenticateToken, checkRole.checkRole([1], 'role
         const [created_tender] = await connection.promise().query(query, values);
 
         if (created_tender?.affectedRows == 1) {
-            const selectQuery =
-                "SELECT * FROM tender WHERE id = ?";
-            const [result] = (await connection.promise().query(selectQuery, [tenderId]))[0];
+            const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = LAST_INSERT_ID()";
+            const [requisitionResult] = (await connection.promise().query(selectRequisitionQuery))[0];
 
-            const requisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
-            const [requisitionResult] = (await connection.promise().query(requisitionQuery, [requisition_id]))[0];
+            const itemQuery = "SELECT * FROM items WHERE id = ?";
+            const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
 
-            // Extract item details based on item_id
-            // const itemQuery = "SELECT * FROM items WHERE id = ?";
-            // const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
+            const selectTenderQuery = "SELECT * FROM tender WHERE id = ?";
+            const [result] = (await connection.promise().query(selectTenderQuery,[tenderId]))[0];
 
             const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
             const [userResult] = (await connection.promise().query(userQuery, [creator_id]))[0];
@@ -69,10 +65,10 @@ router.post('/addTender', auth.authenticateToken, checkRole.checkRole([1], 'role
                 message: "Tender Created Successfully",
                 success: true,
                 data: {
-                    ...result,
+                    tender: result,
                     user: userResult,
-                    requisition: requisitionResult
-                    //item: itemResult
+                    requisition: requisitionResult,
+                    item: itemResult
                 }
             });
         }
@@ -162,6 +158,7 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), a
         });
     }
 });
+
 
 // API endpoint to delete a tender by ID
 router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {

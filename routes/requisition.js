@@ -7,11 +7,12 @@ var checkRole = require('../services/checkrole');
 
   
 
-// id generation
-let lastTenderId = 0;
+//id genration
+let lastRequisitionId = 0;
 
-async function getLastTenderIdFromDatabase() {
-    const query = "SELECT MAX(CAST(SUBSTRING(id, 7) AS UNSIGNED)) AS lastId FROM tender";
+
+async function getLastRequisitionIdFromDatabase() {
+    const query = "SELECT MAX(CAST(SUBSTRING(id, 5) AS UNSIGNED)) AS lastId FROM requisitions";
     try {
         const [results] = await connection.promise().query(query);
         return results[0].lastId || 0;
@@ -21,70 +22,68 @@ async function getLastTenderIdFromDatabase() {
     }
 }
 
-async function generateTenderId() {
+async function generateRequisitionId() {
     try {
-        const lastId = await getLastTenderIdFromDatabase();
-        lastTenderId = lastId + 1;
-        return `TENDER_${lastTenderId.toString().padStart(4, '0')}`;
+        const lastId = await getLastRequisitionIdFromDatabase();
+        lastRequisitionId = lastId + 1;
+        return `REQ_${lastRequisitionId.toString().padStart(4, '0')}`;
     } catch (error) {
         console.log(error);
         return null;
     }
 }
 
-// API endpoint to add a tender
-router.post('/addTender', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    const { requisition_id, deadline } = req.body;
+// API endpoint to add a requisition
+router.post('/addRequisition', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+    const { item_id, quantity, purpose, project_name, location } = req.body;
 
     try {
-        const tenderId = await generateTenderId();
-        if (!tenderId) {
-            return res.status(500).json({ message: "Failed to generate tender ID" });
+        const reqId = await generateRequisitionId();
+        if (!reqId) {
+            return res.status(500).json({ message: "Failed to generate requisition ID" });
         }
 
-        // Access creator_id from the decoded token
+
+        // Access req_creator_id from the decoded token
         const creator_id = res.locals.user.ex_id;
 
+       
         const query =
-            "INSERT INTO tender (id, requisition_id, creator_id, deadline) VALUES (?, ?, ?, ?)";
-        const values = [tenderId, requisition_id, creator_id, deadline];
+        "INSERT INTO requisitions (id,creator_id, item_id, quantity, purpose, project_name, location) VALUES (?, ?, ?, ?, ?,?,?)";
+        const values = [reqId,creator_id,item_id, quantity, purpose, project_name, location];
 
-        const [created_tender] = await connection.promise().query(query, values);
+        const [created_req] = await connection.promise().query(query, values);
         const selectQuery =
-            "SELECT * FROM tender WHERE id = LAST_INSERT_ID()";
+        "SELECT * FROM requisitions WHERE id = LAST_INSERT_ID()";
         const [result] = (await connection.promise().query(selectQuery))[0];
 
-        if (created_tender?.affectedRows == 1) {
-            const requisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
-            const [requisitionResult] = (await connection.promise().query(requisitionQuery, [requisition_id]))[0];
 
-            // Extract item details based on item_id
-            const itemQuery = "SELECT * FROM items WHERE id = ?";
-            const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
+        if( created_req?.affectedRows == 1)
+        {
+            
+         const itemQuery = "SELECT * FROM items WHERE id = ?";
+         const [itemResult] = (await connection.promise().query(itemQuery, [item_id]))[0];
 
-            const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
-            const [userResult] = (await connection.promise().query(userQuery, [creator_id]))[0];
+         const userQuery = "SELECT ex_id, ex_email , ex_name FROM tbl_user where ex_id = ? ";
+         const [userResult] = (await connection.promise().query(userQuery, [creator_id]))[0];
 
-            return res.status(200).json({
-                status: 200,
-                message: "Tender Created Successfully",
-                success: true,
-                data: {
-                    ...result,
-                    user: userResult,
-                    requisition: requisitionResult,
-                    item: itemResult
-                }
-            });
-        }
+          return res.status(200).json({
+              status : 200,
+              message : "Requistion Created Successfully",
+              success : true,
+              data : {
+                     ...result ,
+                    user : userResult,
+                    item: itemResult}});
+      }  
 
     } catch (error) {
         console.error(error);
         return res.status(500).json({
-            status: 500,
-            message: "Error in creating tender",
-            success: false,
-            data: error
+            status : 500,
+              message : "Error in creating requisition",
+              success : false,
+              data : error
         });
     }
 });
