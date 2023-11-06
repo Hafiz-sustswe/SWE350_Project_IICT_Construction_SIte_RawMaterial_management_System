@@ -5,31 +5,13 @@ const router = express.Router();
 var auth = require('../services/authentication');
 var checkRole = require('../services/checkrole');
 
-//date generation
-function getCurrentDateTime() {
-    const now = new Date();
-    
-    // Format the date to match the expected format in your database
-    const formattedDate = `${now.getFullYear()}-${padZero(now.getMonth() + 1)}-${padZero(now.getDate())}`;
-    const formattedTime = `${padZero(now.getHours())}:${padZero(now.getMinutes())}:${padZero(now.getSeconds())}`;
-  
-    // Combine date and time
-    const dateTimeString = `${formattedDate} ${formattedTime}`;
-  
-    return dateTimeString;
-  }
-  
-  function padZero(num) {
-    return num.toString().padStart(2, '0');
-  }
   
 
-//id genration
-let lastRequisitionId = 0;
+// id generation
+let lastTenderId = 0;
 
-
-async function getLastRequisitionIdFromDatabase() {
-    const query = "SELECT MAX(CAST(SUBSTRING(req_id, 5) AS UNSIGNED)) AS lastId FROM tbl_requisition_detail";
+async function getLastTenderIdFromDatabase() {
+    const query = "SELECT MAX(CAST(SUBSTRING(id, 7) AS UNSIGNED)) AS lastId FROM tender";
     try {
         const [results] = await connection.promise().query(query);
         return results[0].lastId || 0;
@@ -39,87 +21,295 @@ async function getLastRequisitionIdFromDatabase() {
     }
 }
 
-async function generateRequisitionId() {
+async function generateTenderId() {
     try {
-        const lastId = await getLastRequisitionIdFromDatabase();
-        lastRequisitionId = lastId + 1;
-        return `REQ_${lastRequisitionId.toString().padStart(4, '0')}`;
+        const lastId = await getLastTenderIdFromDatabase();
+        lastTenderId = lastId + 1;
+        return `TENDER_${lastTenderId.toString().padStart(4, '0')}`;
     } catch (error) {
         console.log(error);
         return null;
     }
 }
 
-// API endpoint to add a requisition
-router.post('/addRequisition', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    const requisition = req.body;
+// API endpoint to add a tender
+router.post('/addTender', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+    const { requisition_id, deadline } = req.body;
 
     try {
-        const reqId = await generateRequisitionId();
-        if (!reqId) {
-            return res.status(500).json({ message: "Failed to generate requisition ID" });
+        const tenderId = await generateTenderId();
+        if (!tenderId) {
+            return res.status(500).json({ message: "Failed to generate tender ID" });
         }
 
-        // Access req_creator_id from the decoded token
-        const req_creator_id = res.locals.user.ex_id;
+        // Access creator_id from the decoded token
+        const creator_id = res.locals.user.ex_id;
 
-        // Assuming you have a function getCurrentDateTime() to get the current date and time
-        const req_date = getCurrentDateTime();
+        const query =
+            "INSERT INTO tender (id, requisition_id, creator_id, deadline) VALUES (?, ?, ?, ?)";
+        const values = [tenderId, requisition_id, creator_id, deadline];
 
-        const query = "INSERT INTO tbl_requisition_detail (req_id, req_creator_id, req_date, req_item_id, req_qtity, purpose) VALUES (?, ?, ?, ?, ?, ?)";
-        const [results] = await connection.promise().query(query, [reqId, req_creator_id, req_date, requisition.req_item_id, requisition.req_qtity, requisition.purpose]);
+        const [created_tender] = await connection.promise().query(query, values);
+        const selectQuery =
+            "SELECT * FROM tender WHERE id = LAST_INSERT_ID()";
+        const [result] = (await connection.promise().query(selectQuery))[0];
 
-        return res.status(200).json({ message: "Requisition Added Successfully" });
+        if (created_tender?.affectedRows == 1) {
+            const requisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
+            const [requisitionResult] = (await connection.promise().query(requisitionQuery, [requisition_id]))[0];
+
+            // Extract item details based on item_id
+            const itemQuery = "SELECT * FROM items WHERE id = ?";
+            const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
+
+            const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
+            const [userResult] = (await connection.promise().query(userQuery, [creator_id]))[0];
+
+            return res.status(200).json({
+                status: 200,
+                message: "Tender Created Successfully",
+                success: true,
+                data: {
+                    ...result,
+                    user: userResult,
+                    requisition: requisitionResult,
+                    item: itemResult
+                }
+            });
+        }
+
     } catch (error) {
         console.error(error);
-        return res.status(500).json(error);
+        return res.status(500).json({
+            status: 500,
+            message: "Error in creating tender",
+            success: false,
+            data: error
+        });
     }
 });
 
 
-// API endpoint to update a requisition
-router.patch('/updateRequisition', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    const requisition = req.body;
+router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+    const { id } = req.params;
+    const { item_id, creator_id, quantity, purpose, project_name, location } = req.body;
 
-    const query = "UPDATE tbl_requisition_detail SET req_item_id = ?, req_qtity = ?, purpose = ? WHERE req_id = ?";
+    const updateColumns = [];
+    const updateValues = [];
+
+    if (item_id) {
+        updateColumns.push('item_id');
+        updateValues.push(item_id);
+    }
+
+    if (creator_id) {
+        updateColumns.push('creator_id');
+        updateValues.push(creator_id);
+    }
+
+    if (quantity) {
+        updateColumns.push('quantity');
+        updateValues.push(quantity);
+    }
+
+    if (purpose) {
+        updateColumns.push('purpose');
+        updateValues.push(purpose);
+    }
+
+    if (project_name) {
+        updateColumns.push('project_name');
+        updateValues.push(project_name);
+    }
+
+    if (location) {
+        updateColumns.push('location');
+        updateValues.push(location);
+    }
+
+    const updateQuery = `UPDATE requisitions SET ${updateColumns.map(col => `${col} = ?`).join(', ')} WHERE id = ?`;
+    const getByIdQuery = "SELECT * FROM requisitions WHERE id = ?";
+    const itemQuery = "SELECT * FROM items WHERE id = ?";
+    const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
+
     try {
-        const [results] = await connection.promise().query(query, [requisition.req_item_id, requisition.req_qtity, requisition.purpose, requisition.req_id]);
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ message: "Requisition not found" });
+        const valuesToUpdate = [...updateValues, id];
+        const [updateResult] = await connection.promise().query(updateQuery, valuesToUpdate);
+
+        // Check if the requisition with the given id exists
+        if (updateResult.affectedRows === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "Requisition not found or not updated",
+                success: false,
+            });
         }
-        return res.status(200).json({ message: "Requisition updated successfully" });
+
+        const [result] = await connection.promise().query(getByIdQuery, [id]);
+
+        // Fetch additional details for the requisition
+        const [itemResult] = await connection.promise().query(itemQuery, [item_id]);
+        const [userResult] = await connection.promise().query(userQuery, [creator_id]);
+
+        return res.status(200).json({
+            status: 200,
+            message: "Requisition Updated Successfully",
+            success: true,
+            data: {
+                ...result[0],
+                user: userResult[0],
+                item: itemResult[0]
+            }
+        });
+
     } catch (error) {
         console.error(error);
-        return res.status(500).json(error);
+        return res.status(500).json({
+            status: 500,
+            message: "Error in updating requisition",
+            success: false,
+            data: error
+        });
     }
 });
+
 
 // API endpoint to delete a requisition by ID
-router.delete('/deleteRequisitionById', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    const requisition = req.body;
+router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+    const { id } = req.params;
 
-    const query = "DELETE FROM tbl_requisition_detail WHERE req_id = ?";
+    const deleteQuery = "DELETE FROM requisitions WHERE id = ?";
+    const selectQuery = "SELECT * FROM requisitions WHERE id = ?";
+    const itemQuery = "SELECT * FROM items WHERE id = ?";
+    const userQuery = "SELECT ex_id, ex_email , ex_name FROM tbl_user WHERE ex_id = ?";
+
     try {
-        const [results] = await connection.promise().query(query, [requisition.req_id]);
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ message: "Requisition not found" });
+        const [result] = await connection.promise().query(selectQuery, [id]);
+        
+        // Check if the requisition with the given id exists
+        if (result.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "Requisition not found",
+                success: false,
+            });
         }
-        return res.status(200).json({ message: "Requisition deleted successfully" });
+
+        // Delete the requisition
+        const [delete_result] = await connection.promise().query(deleteQuery, [id]);
+
+        if (delete_result?.affectedRows === 1) {
+            // Fetch item details
+            const [itemResult] = await connection.promise().query(itemQuery, [result[0].item_id]);
+
+            // Fetch user details
+            const [userResult] = await connection.promise().query(userQuery, [result[0].creator_id]);
+
+            return res.status(200).json({
+                status: 200,
+                message: "Requisition Deleted Successfully",
+                success: true,
+                data: {
+                    ...result[0],
+                    user: userResult[0],
+                    item: itemResult[0]
+                }
+            });
+        }
+
     } catch (error) {
         console.error(error);
-        return res.status(500).json(error);
+        return res.status(500).json({
+            status: 500,
+            message: "Error in deleting requisition",
+            success: false,
+            data: error
+        });
     }
 });
 
+
+
 // API endpoint to get requisitions
-router.get('/getRequisition', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    const query = "SELECT rd.req_id, u.ex_name AS req_creator_name, rd.req_date, i.item_name AS req_item_name, rd.req_qtity, rd.purpose FROM tbl_requisition_detail rd JOIN tbl_user u ON rd.req_creator_id = u.ex_id JOIN tbl_item i ON rd.req_item_id = i.item_id;";
+router.get('/getAllRequisition', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+    const getAllQuery = "SELECT * FROM requisitions";
+    const itemQuery = "SELECT * FROM items WHERE id = ?";
+    const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
+
     try {
-        const [results] = await connection.promise().query(query);
-        return res.status(200).json(results);
+        const [results] = await connection.promise().query(getAllQuery);
+
+        // Fetch additional details for each requisition
+        const requisitionsWithDetails = await Promise.all(results.map(async (requisition) => {
+            const [itemResult] = await connection.promise().query(itemQuery, [requisition.item_id]);
+            const [userResult] = await connection.promise().query(userQuery, [requisition.creator_id]);
+
+            return {
+                ...requisition,
+                user: userResult[0],
+                item: itemResult[0]
+            };
+        }));
+
+        return res.status(200).json({
+            status: 200,
+            message: "Requisitions Fetched Successfully",
+            success: true,
+            data: requisitionsWithDetails
+        });
+
     } catch (error) {
         console.error(error);
-        return res.status(500).json(error);
+        return res.status(500).json({
+            status: 500,
+            message: "Error in fetching requisitions",
+            success: false,
+            data: error
+        });
+    }
+});
+
+router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+    const { id } = req.params;
+    const getByIdQuery = "SELECT * FROM requisitions WHERE id = ?";
+    const itemQuery = "SELECT * FROM items WHERE id = ?";
+    const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
+
+    try {
+        const [result] = await connection.promise().query(getByIdQuery, [id]);
+
+        // Check if the requisition with the given id exists
+        if (result.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "Requisition not found",
+                success: false,
+            });
+        }
+
+        // Fetch additional details for the requisition
+        const [itemResult] = await connection.promise().query(itemQuery, [result[0].item_id]);
+        const [userResult] = await connection.promise().query(userQuery, [result[0].creator_id]);
+
+        return res.status(200).json({
+            status: 200,
+            message: "Requisition Fetched Successfully",
+            success: true,
+            data: {
+                ...result[0],
+                user: userResult[0],
+                item: itemResult[0]
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            status: 500,
+            message: "Error in fetching requisition",
+            success: false,
+            data: error
+        });
     }
 });
 

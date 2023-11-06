@@ -249,15 +249,22 @@
 **Request Body**
 ```json
 {
-    "item_name" : "Bodna", 
-    "item_price" : 6767.89
+    "item_name" : "MS ROD"
 }
 ```
 
 **Response Body**
 ```json
 {
-    "message": "Item Added Successfully"
+    "status": 200,
+    "message": "Item added succesfully",
+    "success": true,
+    "data": {
+        "id": "ITEM_0002",
+        "item_name": "MS ROD",
+        "created_at": "2023-11-05T03:51:37.000Z",
+        "updated_at": "2023-11-05T15:37:45.000Z"
+    }
 }
 ```
 
@@ -274,29 +281,50 @@
 
 **Response Body**
 ```json
-[
-    {
-        "item_id": "ITEM_0005",
-        "item_name": "Balu",
-        "item_price": 6767.89,
-        "date_added": "2023-10-26T00:00:00.000Z",
-        "supplier_id": 10
-    },
-    
-    {
-        "item_id": "ITEM_0007",
-        "item_name": "MS Rod2",
-        "item_price": 6767.89,
-        "date_added": "2023-10-26T00:00:00.000Z",
-        "supplier_id": 10
-    }
-]
+
+{
+    "status": 200,
+    "success": true,
+    "data": [
+        {
+            "id": "ITEM_0002",
+            "item_name": "MS ROD",
+            "created_at": "2023-11-05T03:51:37.000Z",
+            "updated_at": "2023-11-05T15:37:45.000Z"
+        }
+        ]
+}
+```
+
+## Endpoint:GET https://icsrmms.vercel.app/item/ITEM_0002
+
+**Description:** This endpoint is used to get  the item info by id(ITEM_0002) 
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Response Body**
+```json
+{
+    "status": 200,
+    "success": true,
+    "data": [
+        {
+            "id": "ITEM_0002",
+            "item_name": "MS ROD",
+            "created_at": "2023-11-05T03:51:37.000Z",
+            "updated_at": "2023-11-05T15:37:45.000Z"
+        }
+    ]
+}
 ```
 
 
-## Endpoint:PATCH https://icsrmms.vercel.app/item/updateItem
+## Endpoint:PATCH https://icsrmms.vercel.app/item/ITEM_0002
 
-**Description:** This endpoint is used to Update the name of  an item by by id
+**Description:** This endpoint is used to Update the name of  an item by by id(ITEM_0002)
 
 **Access:** admin
 
@@ -306,22 +334,28 @@
 **Request Body**
 ```json
 {
-    "item_name" : "Balu", 
-    "item_id" :  "ITEM_0005"
-
+    "item_name" : "MS ROD2"
 }
 ```
 
 **Response Body**
 ```json
 {
-    "message": "Item updated Successfully"
+    "status": 200,
+    "message": "Item updated successfully",
+    "success": true,
+    "data": {
+        "id": "ITEM_0002",
+        "item_name": "MS ROD2",
+        "created_at": "2023-11-05T03:51:37.000Z",
+        "updated_at": "2023-11-06T00:03:29.000Z"
+    }
 }
 ```
 
 
 
-## Endpoint: DELETE https://icsrmms.vercel.app/item/deleteItemById
+## Endpoint: DELETE https://icsrmms.vercel.app/item/ITEM_0002
 
 **Description:** This endpoint is used to Delete an item by id
 
@@ -330,23 +364,18 @@
 **Headers:** `Authorization` : [access_token]
 
 
-**Request Body**
-```json
-{
-
-    "item_id" :  "ITEM_0002"
-
-}
-```
-
 **Response Body**
 ```json
 {
-
-  
-    "message": "Item deleted Succesfully"
-
-
+    "status": 200,
+    "message": "Item deleted Successfully",
+    "success": true,
+    "data": {
+        "id": "ITEM_0002",
+        "item_name": "MS ROD2",
+        "created_at": "2023-11-05T03:51:37.000Z",
+        "updated_at": "2023-11-06T00:03:29.000Z"
+    }
 }
 ```
 
@@ -354,7 +383,7 @@
 
 ## Endpoint:POST https://icsrmms.vercel.app/requisition/addRequisition
 
-**Description:** This endpoint is used to add a new  item 
+**Description:** This endpoint is used to add a new  req 
 
 **Access:** admin
 
@@ -364,22 +393,48 @@
 **Request Body**
 ```json
 {
-    "req_item_id" : "ITEM_0005",
-    "req_qtity" : 6767,
-    "purpose" : "Bathroom"
+    "item_id": "ITEM_0002",
+    "quantity": 2,
+    "purpose": "this is my purpose none of your purpose",
+    "project_name": "this is my project none of your project",
+    "location": "this is my location none of your location"
 }
 ```
 
 **Response Body**
 ```json
 {
-    "message": "Requisition Added Successfully"
+    "status": 200,
+    "message": "Requistion Created Successfully",
+    "success": true,
+    "data": {
+        "id": "REQ_0004",
+        "creator_id": 2,
+        "item_id": "ITEM_0009",
+        "quantity": 100,
+        "purpose": "this is my purpose none of your purpose",
+        "project_name": "this is my project none of your project",
+        "location": "this is my location none of your location",
+        "created_at": "2023-11-05T04:52:35.000Z",
+        "updated_at": "2023-11-05T21:12:36.000Z",
+        "user": {
+            "ex_id": 2,
+            "ex_email": "hafiz.sust333@gmail.com",
+            "ex_name": "forhad"
+        },
+        "item": {
+            "id": "ITEM_0002",
+            "item_name": "MS ROD",
+            "created_at": "2023-11-05T03:51:37.000Z",
+            "updated_at": "2023-11-05T15:37:45.000Z"
+        }
+    }
 }
 ```
 
 
 
-## Endpoint:GET https://icsrmms.vercel.app/requisition/getRequisition
+## Endpoint:GET https://icsrmms.vercel.app/requisition/getAllRequisition
 
 **Description:** This endpoint is used to get all the requisition info
 
@@ -390,22 +445,81 @@
 
 **Response Body**
 ```json
-[
    {
-        "req_id": "REQ_0002",
-        "req_creator_name": "admin",
-        "req_date": "2023-10-25T18:00:00.000Z",
-        "req_item_name": "MS Rod2",
-        "req_qtity": 100,
-        "purpose": "hudai"
+    "status": 200,
+    "message": "Requisitions Fetched Successfully",
+    "success": true,
+    "data": [
+        {
+            "id": "REQ_0004",
+            "creator_id": 2,
+            "item_id": "ITEM_0009",
+            "quantity": 100,
+            "purpose": "this is my purpose none of your purpose",
+            "project_name": "this is my project none of your project",
+            "location": "this is my location none of your location",
+            "created_at": "2023-11-05T04:52:35.000Z",
+            "updated_at": "2023-11-05T21:12:36.000Z",
+            "user": {
+                "ex_id": 2,
+                "ex_email": "hafiz.sust333@gmail.com",
+                "ex_name": "forhad"
+            },
+            "item": {
+                "id": "ITEM_0009",
+                "item_name": "item 3",
+                "created_at": "2023-11-05T04:00:20.000Z",
+                "updated_at": "2023-11-05T04:00:20.000Z"
+            }
+        }]
+   }
+```
+
+## Endpoint:GET https://icsrmms.vercel.app/requisition/REQ_0004
+
+**Description:** This endpoint is used to get  the requisition infoby id(REQ_0004)
+
+**Access:** admin
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Response Body**
+```json
+   {
+    "status": 200,
+    "message": "Requisition Fetched Successfully",
+    "success": true,
+    "data": {
+        "id": "REQ_0004",
+        "creator_id": 2,
+        "item_id": "ITEM_0009",
+        "quantity": 100,
+        "purpose": "this is my purpose none of your purpose",
+        "project_name": "this is my project none of your project",
+        "location": "this is my location none of your location",
+        "created_at": "2023-11-05T04:52:35.000Z",
+        "updated_at": "2023-11-05T21:12:36.000Z",
+        "user": {
+            "ex_id": 2,
+            "ex_email": "hafiz.sust333@gmail.com",
+            "ex_name": "forhad"
+        },
+        "item": {
+            "id": "ITEM_0009",
+            "item_name": "item 3",
+            "created_at": "2023-11-05T04:00:20.000Z",
+            "updated_at": "2023-11-05T04:00:20.000Z"
+        }
     }
-]
+}
 ```
 
 
-## Endpoint:PATCH https://icsrmms.vercel.app/requisition/updateRequisition
+## Endpoint:PATCH https://icsrmms.vercel.app/requisition/REQ_0004
 
 **Description:** This endpoint is used to change the item id of  an req by by requisition id
+(multiple filed update enabled, so any number of field can be updated)
 
 **Access:** admin
 
@@ -415,23 +529,41 @@
 **Request Body**
 ```json
 {
- 
-    "req_item_id" : "ITEM_0005",
-    "req_id" : "REQ_0001"
-    
+     "item_id": "ITEM_0009",
+     "quantity": 1000
+
 }
 ```
 
 **Response Body**
 ```json
 {
-    "message": "Requisition updated Successfully"
+    "status": 200,
+    "message": "Requisition Updated Successfully",
+    "success": true,
+    "data": {
+        "id": "REQ_0004",
+        "creator_id": 2,
+        "item_id": "ITEM_0009",
+        "quantity": 1000,
+        "purpose": "this is my purpose none of your purpose",
+        "project_name": "this is my project none of your project",
+        "location": "this is my location none of your location",
+        "created_at": "2023-11-05T04:52:35.000Z",
+        "updated_at": "2023-11-06T00:16:25.000Z",
+        "item": {
+            "id": "ITEM_0009",
+            "item_name": "item 3",
+            "created_at": "2023-11-05T04:00:20.000Z",
+            "updated_at": "2023-11-05T04:00:20.000Z"
+        }
+    }
 }
 ```
 
 
 
-## Endpoint: DELETE https://icsrmms.vercel.app/requisition/deleteRequisitionById
+## Endpoint: DELETE https://icsrmms.vercel.app/requisition/REQ_0009
 
 **Description:** This endpoint is used to Delete an requisition by id
 
@@ -440,23 +572,34 @@
 **Headers:** `Authorization` : [access_token]
 
 
-**Request Body**
-```json
-{
-
-    "item_id" :  "REQ_0002"
-
-}
-```
-
 **Response Body**
 ```json
 {
-
-  
-    "message": "Req deleted Succesfully"
-
-
+    "status": 200,
+    "message": "Requisition Deleted Successfully",
+    "success": true,
+    "data": {
+        "id": "REQ_0009",
+        "creator_id": 2,
+        "item_id": "ITEM_0009",
+        "quantity": 1000,
+        "purpose": "this is my purpose none of your purpose",
+        "project_name": "this is my project none of your project",
+        "location": "this is my location none of your location",
+        "created_at": "2023-11-05T23:00:11.000Z",
+        "updated_at": "2023-11-06T00:18:43.000Z",
+        "user": {
+            "ex_id": 2,
+            "ex_email": "hafiz.sust333@gmail.com",
+            "ex_name": "forhad"
+        },
+        "item": {
+            "id": "ITEM_0009",
+            "item_name": "item 3",
+            "created_at": "2023-11-05T04:00:20.000Z",
+            "updated_at": "2023-11-05T04:00:20.000Z"
+        }
+    }
 }
 ```
 
