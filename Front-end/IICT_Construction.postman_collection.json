@@ -1,0 +1,506 @@
+{
+	"info": {
+		"_postman_id": "110c06b8-3c83-4328-8154-b3e9631b5569",
+		"name": "IICT_Construction",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28446667"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ex_email\" : \"hafiz.sust333@gmail.com\",\r\n    \"ex_password\" : \"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "requisition",
+			"item": [
+				{
+					"name": "createRequsition",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"item_id\": \"ITEM_0002\",\r\n    \"quantity\": 2,\r\n    \"purpose\": \"this is my purpose none of your purpose\",\r\n    \"project_name\": \"this is my project none of your project\",\r\n    \"location\": \"this is my location none of your location\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/requisition/addRequisition",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"requisition",
+								"addRequisition"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteRequisition",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/requisition/REQ_0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"requisition",
+								"REQ_0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllRequisitions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/requisition/getAllRequisition",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"requisition",
+								"getAllRequisition"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get requisition by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/requisition/REQ_0004",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"requisition",
+								"REQ_0004"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateRequisition",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n     \"item_id\": \"ITEM_0009\",\r\n     \"quantity\": 100\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/requisition/REQ_0004",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"requisition",
+								"REQ_0004"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "items",
+			"item": [
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/item/ITEM_0007",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item",
+								"ITEM_0007"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"item_name\" : \"MS ROD\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item/ITEM_0002",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item",
+								"ITEM_0002"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getItemById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/item/ITEM_0002",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item",
+								"ITEM_0002"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllItem",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/item/getItem",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item",
+								"getItem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addItem",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"item_name\" : \"MS ROD\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/item/addItem",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item",
+								"addItem"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "tender",
+			"item": [
+				{
+					"name": "Create Tender",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"requisition_id\" : \"REQ_0004\",\r\n    \"deadline\" : \"2025-2-2\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/tender/addTender",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tender",
+								"addTender"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateTender",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"requisition_id\" : \"REQ_0005\",\r\n    \"creator_id\" : 11\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/requisition/REQ_0004",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"requisition",
+								"REQ_0004"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllTender",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tender/getAllTender",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tender",
+								"getAllTender"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTenderById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tender/TENDER_0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tender",
+								"TENDER_0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tender/TENDER_0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tender",
+								"TENDER_0001"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": " https://icsrmms.vercel.app",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6MiwiZXhfZW1haWwiOiJoYWZpei5zdXN0MzMzQGdtYWlsLmNvbSIsInJvbGVfaWQiOjEsImlhdCI6MTY5OTI0NjU1NCwiZXhwIjoxNjk5Mjc1MzU0fQ.5V6r2T5SosoqjhqUum79UTow8Q5y5N5ZeogM3apJxCg",
+			"type": "string"
+		}
+	]
+}
