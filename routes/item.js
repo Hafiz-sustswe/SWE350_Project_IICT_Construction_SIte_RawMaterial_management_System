@@ -78,6 +78,7 @@ router.get('/getItem', auth.authenticateToken, checkRole.checkRole([1], 'role'),
         return res.status(500).json(error);
     }
 });
+
 router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const {id} = req.params;
     const query = "SELECT * FROM items where id = ?";
