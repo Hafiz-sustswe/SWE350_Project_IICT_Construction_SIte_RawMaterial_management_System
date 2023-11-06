@@ -45,8 +45,8 @@ router.post('/addItem', auth.authenticateToken, checkRole.checkRole([1], 'role')
         const [created_item] = await connection.promise().query(query, values);
       
         const selectQuery =
-          "SELECT * FROM items WHERE id = LAST_INSERT_ID()";
-        const [result] = (await connection.promise().query(selectQuery))[0];
+          "SELECT * FROM items WHERE id = ?";
+        const [result] = (await connection.promise().query(selectQuery,[itemId]))[0];
         if( created_item?.affectedRows == 1)
         {
             return res.status(200).json({
@@ -148,8 +148,8 @@ router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), 
     const query = "DELETE FROM items WHERE id = ?";
     try {
         const selectQuery =
-        "SELECT * FROM items WHERE id = LAST_INSERT_ID()";
-        const [result] = (await connection.promise().query(selectQuery))[0];
+        "SELECT * FROM items WHERE id = ?";
+        const [result] = (await connection.promise().query(selectQuery,[id]))[0];
         const [delete_result] = await connection.promise().query(query, [id]);
         if( delete_result?.affectedRows == 1)
         {

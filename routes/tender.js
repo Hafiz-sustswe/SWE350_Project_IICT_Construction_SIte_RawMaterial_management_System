@@ -46,16 +46,17 @@ router.post('/addTender', auth.authenticateToken, checkRole.checkRole([1], 'role
         const values = [tenderId, requisition_id, creator_id, deadline];
 
         const [created_tender] = await connection.promise().query(query, values);
-
+        
+        
         if (created_tender?.affectedRows == 1) {
-            const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = LAST_INSERT_ID()";
-            const [requisitionResult] = (await connection.promise().query(selectRequisitionQuery))[0];
-
-            const itemQuery = "SELECT * FROM items WHERE id = ?";
-            const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
-
             const selectTenderQuery = "SELECT * FROM tender WHERE id = ?";
             const [result] = (await connection.promise().query(selectTenderQuery,[tenderId]))[0];
+
+            const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
+            const [requisitionResult] = (await connection.promise().query(selectRequisitionQuery,[result.requisition_id]))[0];
+            
+            const itemQuery = "SELECT * FROM items WHERE id = ?";
+            const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
 
             const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
             const [userResult] = (await connection.promise().query(userQuery, [creator_id]))[0];
@@ -65,10 +66,12 @@ router.post('/addTender', auth.authenticateToken, checkRole.checkRole([1], 'role
                 message: "Tender Created Successfully",
                 success: true,
                 data: {
-                    tender: result,
+                    ...result,
                     user: userResult,
-                    requisition: requisitionResult,
-                    item: itemResult
+                    requisition: {
+                        ...requisitionResult,
+                            item: itemResult}
+                    
                 }
             });
         }
@@ -110,10 +113,6 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), a
     }
 
     const updateQuery = `UPDATE tender SET ${updateColumns.map(col => `${col} = ?`).join(', ')} WHERE id = ?`;
-    const getByIdQuery = "SELECT * FROM tender WHERE id = ?";
-    const requisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
-    const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
-    const itemQuery = "SELECT * FROM items WHERE id = ?";
 
     try {
         const valuesToUpdate = [...updateValues, id];
@@ -127,24 +126,31 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), a
                 success: false,
             });
         }
-
-        const [result] = await connection.promise().query(getByIdQuery, [id]);
-
-        // Fetch additional details for the tender
-        const [requisitionResult] = await connection.promise().query(requisitionQuery, [requisition_id]);
         
-        const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
-        const [userResult] = await connection.promise().query(userQuery, [creator_id]);
+            const selectTenderQuery = "SELECT * FROM tender WHERE id = ?";
+            const [result] = (await connection.promise().query(selectTenderQuery,[id]))[0];
+
+            const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
+            const [requisitionResult] = (await connection.promise().query(selectRequisitionQuery,[result.requisition_id]))[0];
+            
+            const itemQuery = "SELECT * FROM items WHERE id = ?";
+            const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
+
+            const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
+            const [userResult] = (await connection.promise().query(userQuery, [creator_id]))[0];
+
 
         return res.status(200).json({
             status: 200,
             message: "Tender Updated Successfully",
             success: true,
             data: {
-                ...result[0],
-                user: userResult[0],
-                item: itemResult[0],
-                requisition: requisitionResult[0]
+                ...result,
+                user: userResult,
+                requisition: {
+                    ...requisitionResult,
+                    item: itemResult,
+                },
             }
         });
 
@@ -160,18 +166,13 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), a
 });
 
 
+
 // API endpoint to delete a tender by ID
 router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const { id } = req.params;
-
-    const deleteQuery = "DELETE FROM tender WHERE id = ?";
-    const selectQuery = "SELECT * FROM tender WHERE id = ?";
-    const requisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
-    const userQuery = "SELECT ex_id, ex_email , ex_name FROM tbl_user WHERE ex_id = ?";
-    const itemQuery = "SELECT * FROM items WHERE id = ?";
-
     try {
-        const [result] = await connection.promise().query(selectQuery, [id]);
+        const selectTenderQuery = "SELECT * FROM tender WHERE id = ?";
+        const [result] = (await connection.promise().query(selectTenderQuery,[id]))[0];
 
         // Check if the tender with the given id exists
         if (result.length === 0) {
@@ -183,25 +184,31 @@ router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), 
         }
 
         // Delete the tender
-        const [delete_result] = await connection.promise().query(deleteQuery, [id]);
+        const deleteQuery = "DELETE FROM tender WHERE id = ?";
+        const [delete_result] = await connection.promise().query(deleteQuery, [id])[0];
 
         if (delete_result?.affectedRows === 1) {
             // Fetch requisition details
-            const [requisitionResult] = await connection.promise().query(requisitionQuery, [result[0].requisition_id]);
-           
+            
+            const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
+            const [requisitionResult] = (await connection.promise().query(selectRequisitionQuery,[result.requisition_id]))[0];
+            
+            const itemQuery = "SELECT * FROM items WHERE id = ?";
             const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
-            // Fetch user details
-            const [userResult] = await connection.promise().query(userQuery, [result[0].creator_id]);
 
+            const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
+            const [userResult] = (await connection.promise().query(userQuery, [result.creator_id]))[0];
             return res.status(200).json({
                 status: 200,
                 message: "Tender Deleted Successfully",
                 success: true,
                 data: {
-                    ...result[0],
-                    user: userResult[0],
-                    item: itemResult[0],
-                    requisition: requisitionResult[0]
+                    ...result,
+                    user: userResult,
+                    requisition: {
+                        ...requisitionResult,
+                        item: itemResult,
+                    },
                 }
             });
         }
@@ -218,33 +225,36 @@ router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), 
 });
 
 // API endpoint to get tenders
+//--done
 router.get('/getAllTender', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    const getAllQuery = "SELECT * FROM tender";
-    const requisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
-    const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
-    const itemQuery = "SELECT * FROM items WHERE id = ?";
-
+    
     try {
-        const [results] = await connection.promise().query(getAllQuery);
-
         // Fetch additional details for each tender
-        const tendersWithDetails = await Promise.all(results.map(async (tender) => {
-            const [requisitionResult] = await connection.promise().query(requisitionQuery, [tender.requisition_id]);
-            const [userResult] = await connection.promise().query(userQuery, [tender.creator_id]);
+            const selectTenderQuery = "SELECT * FROM tender";
+            const [result] = (await connection.promise().query(selectTenderQuery))[0];
+
+            const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
+            const [requisitionResult] = (await connection.promise().query(selectRequisitionQuery,[result.requisition_id]))[0];
+            
+            const itemQuery = "SELECT * FROM items WHERE id = ?";
             const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
-            return {
-                ...tender,
-                user: userResult[0],
-                item: itemResult,
-                requisition: requisitionResult[0]
-            };
-        }));
+
+            const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
+            const [userResult] = (await connection.promise().query(userQuery, [result.creator_id]))[0];
+
 
         return res.status(200).json({
             status: 200,
-            message: "Tenders Fetched Successfully",
+            message: "Tender fetched Successfully",
             success: true,
-            data: tendersWithDetails
+            data: {
+                ...result,
+                user: userResult,
+                requisition: {
+                    ...requisitionResult,
+                    item: itemResult,
+                },
+            }
         });
 
     } catch (error) {
@@ -304,183 +314,6 @@ router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), asy
     }
 });
 
-// API endpoint to delete a tender by ID
-router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    const { id } = req.params;
-
-    const deleteQuery = "DELETE FROM tender WHERE id = ?";
-    const selectQuery = "SELECT * FROM tender WHERE id = ?";
-    const requisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
-    const userQuery = "SELECT ex_id, ex_email , ex_name FROM tbl_user WHERE ex_id = ?";
-    const itemQuery = "SELECT * FROM items WHERE id = ?";
-
-    try {
-        const [result] = await connection.promise().query(selectQuery, [id]);
-
-        // Check if the tender with the given id exists
-        if (result.length === 0) {
-            return res.status(404).json({
-                status: 404,
-                message: "Tender not found",
-                success: false,
-            });
-        }
-
-        // Delete the tender
-        const [delete_result] = await connection.promise().query(deleteQuery, [id]);
-
-        if (delete_result?.affectedRows === 1) {
-            // Fetch requisition details
-            const [requisitionResult] = await connection.promise().query(requisitionQuery, [result[0].requisition_id]);
-            
-            // Check if the requisition with the given id exists
-            if (requisitionResult.length === 0) {
-                return res.status(404).json({
-                    status: 404,
-                    message: "Requisition not found",
-                    success: false,
-                });
-            }
-
-            const [itemResult] = await connection.promise().query(itemQuery, [requisitionResult[0].item_id]);
-            // Fetch user details
-            const [userResult] = await connection.promise().query(userQuery, [result[0].creator_id]);
-
-            return res.status(200).json({
-                status: 200,
-                message: "Tender Deleted Successfully",
-                success: true,
-                data: {
-                    ...result[0],
-                    user: userResult[0],
-                    item: itemResult,
-                    requisition: requisitionResult[0]
-                }
-            });
-        }
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            status: 500,
-            message: "Error in deleting tender",
-            success: false,
-            data: error
-        });
-    }
-});
-
-// API endpoint to get tenders
-// API endpoint to get tenders
-router.get('/getAllTender', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    const getAllQuery = "SELECT * FROM tender";
-    const requisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
-    const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
-    const itemQuery = "SELECT * FROM items WHERE id = ?";
-
-    try {
-        const [results] = await connection.promise().query(getAllQuery);
-
-        // Fetch additional details for each tender
-        const tendersWithDetails = await Promise.all(results.map(async (tender) => {
-            const [requisitionResult] = await connection.promise().query(requisitionQuery, [tender.requisition_id]);
-            
-            // Check if the requisition with the given id exists
-            if (requisitionResult.length === 0) {
-                return null;
-            }
-
-            const [userResult] = await connection.promise().query(userQuery, [tender.creator_id]);
-            
-            // Fetch item details using item_id from requisition
-            const [itemResult] = await connection.promise().query(itemQuery, [requisitionResult[0].item_id]);
-
-            return {
-                ...tender,
-                user: userResult[0],
-                item: itemResult[0],  // Include item details in the response
-                requisition: requisitionResult[0]
-            };
-        }));
-
-        // Filter out null values (tenders without associated requisitions)
-        const validTenders = tendersWithDetails.filter(tender => tender !== null);
-
-        return res.status(200).json({
-            status: 200,
-            message: "Tenders Fetched Successfully",
-            success: true,
-            data: validTenders
-        });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            status: 500,
-            message: "Error in fetching tenders",
-            success: false,
-            data: error
-        });
-    }
-});
-
-
-router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    const { id } = req.params;
-    const getByIdQuery = "SELECT * FROM tender WHERE id = ?";
-    const requisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
-    const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
-    const itemQuery = "SELECT * FROM items WHERE id = ?";
-
-    try {
-        const [result] = await connection.promise().query(getByIdQuery, [id]);
-
-        // Check if the tender with the given id exists
-        if (result.length === 0) {
-            return res.status(404).json({
-                status: 404,
-                message: "Tender not found",
-                success: false,
-            });
-        }
-
-        // Fetch additional details for the tender
-        const [requisitionResult] = await connection.promise().query(requisitionQuery, [result[0].requisition_id]);
-        
-        // Check if the requisition with the given id exists
-        if (requisitionResult.length === 0) {
-            return res.status(404).json({
-                status: 404,
-                message: "Requisition not found",
-                success: false,
-            });
-        }
-
-        const [userResult] = await connection.promise().query(userQuery, [result[0].creator_id]);
-        const [itemResult] = await connection.promise().query(itemQuery, [requisitionResult[0].item_id]);
-
-        return res.status(200).json({
-            status: 200,
-            message: "Tender Fetched Successfully",
-            success: true,
-            data: {
-                ...result[0],
-                user: userResult[0],
-                item: itemResult[0],
-                requisition: requisitionResult[0]
-            }
-        });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            status: 500,
-            message: "Error in fetching tender",
-            success: false,
-            data: error
-        });
-    }
-});
 
 
 

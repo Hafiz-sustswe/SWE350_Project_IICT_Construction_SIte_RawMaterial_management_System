@@ -53,14 +53,14 @@ router.post('/addRequisition', auth.authenticateToken, checkRole.checkRole([1], 
         const values = [reqId,creator_id,item_id, quantity, purpose, project_name, location];
 
         const [created_req] = await connection.promise().query(query, values);
-        const selectQuery =
-        "SELECT * FROM requisitions WHERE id = LAST_INSERT_ID()";
-        const [result] = (await connection.promise().query(selectQuery))[0];
+        
+       
 
 
         if( created_req?.affectedRows == 1)
         {
-            
+         const selectQuery = "SELECT * FROM requisitions WHERE id = ?";
+         const [result] = (await connection.promise().query(selectQuery,[reqId]))[0];
          const itemQuery = "SELECT * FROM items WHERE id = ?";
          const [itemResult] = (await connection.promise().query(itemQuery, [item_id]))[0];
 
