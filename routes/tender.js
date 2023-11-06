@@ -173,6 +173,7 @@ router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), 
     try {
         const selectTenderQuery = "SELECT * FROM tender WHERE id = ?";
         const [result] = (await connection.promise().query(selectTenderQuery,[id]))[0];
+       
 
         // Check if the tender with the given id exists
         if (result.length === 0) {
@@ -185,11 +186,11 @@ router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), 
 
         // Delete the tender
         const deleteQuery = "DELETE FROM tender WHERE id = ?";
-        const [delete_result] = await connection.promise().query(deleteQuery, [id])[0];
+        const [delete_result] = await connection.promise().query(deleteQuery, [id]);
+        console.log(delete_result);
 
         if (delete_result?.affectedRows === 1) {
             // Fetch requisition details
-            
             const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
             const [requisitionResult] = (await connection.promise().query(selectRequisitionQuery,[result.requisition_id]))[0];
             
@@ -227,34 +228,41 @@ router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), 
 // API endpoint to get tenders
 //--done
 router.get('/getAllTender', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
-    
     try {
-        // Fetch additional details for each tender
-            const selectTenderQuery = "SELECT * FROM tender";
-            const [result] = (await connection.promise().query(selectTenderQuery))[0];
+        // Fetch all tenders
+        const selectTenderQuery = "SELECT * FROM tender";
+        const [tenders] = await connection.promise().query(selectTenderQuery);
 
+        // Array to store the final result
+        const tenderDetails = [];
+
+        // Loop through each tender to fetch additional details
+        for (const tender of tenders) {
             const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
-            const [requisitionResult] = (await connection.promise().query(selectRequisitionQuery,[result.requisition_id]))[0];
-            
+            const [requisitionResult] = await connection.promise().query(selectRequisitionQuery, [tender.requisition_id]);
+
             const itemQuery = "SELECT * FROM items WHERE id = ?";
-            const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
+            const [itemResult] = await connection.promise().query(itemQuery, [requisitionResult[0].item_id]);
 
             const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
-            const [userResult] = (await connection.promise().query(userQuery, [result.creator_id]))[0];
+            const [userResult] = await connection.promise().query(userQuery, [tender.creator_id]);
 
+            // Add details for the current tender to the array
+            tenderDetails.push({
+                ...tender,
+                user: userResult[0],
+                requisition: {
+                    ...requisitionResult[0],
+                    item: itemResult[0],
+                },
+            });
+        }
 
         return res.status(200).json({
             status: 200,
-            message: "Tender fetched Successfully",
+            message: "Tenders fetched Successfully",
             success: true,
-            data: {
-                ...result,
-                user: userResult,
-                requisition: {
-                    ...requisitionResult,
-                    item: itemResult,
-                },
-            }
+            data: tenderDetails,
         });
 
     } catch (error) {
@@ -267,16 +275,12 @@ router.get('/getAllTender', auth.authenticateToken, checkRole.checkRole([1], 'ro
         });
     }
 });
-
 router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
     const { id } = req.params;
-    const getByIdQuery = "SELECT * FROM tender WHERE id = ?";
-    const requisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
-    const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
-    const itemQuery = "SELECT * FROM items WHERE id = ?";
 
     try {
-        const [result] = await connection.promise().query(getByIdQuery, [id]);
+        const selectTenderQuery = "SELECT * FROM tender WHERE id = ?";
+        const [result] = await connection.promise().query(selectTenderQuery, [id]);
 
         // Check if the tender with the given id exists
         if (result.length === 0) {
@@ -287,10 +291,16 @@ router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), asy
             });
         }
 
-        // Fetch additional details for the tender
-        const [requisitionResult] = await connection.promise().query(requisitionQuery, [result[0].requisition_id]);
+        // Fetch requisition details
+        const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
+        const [requisitionResult] = await connection.promise().query(selectRequisitionQuery, [result[0].requisition_id]);
+
+        const itemQuery = "SELECT * FROM items WHERE id = ?";
+        const [itemResult] = await connection.promise().query(itemQuery, [requisitionResult[0].item_id]);
+
+        const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
         const [userResult] = await connection.promise().query(userQuery, [result[0].creator_id]);
-        const [itemResult] = (await connection.promise().query(itemQuery, [requisitionResult.item_id]))[0];
+
         return res.status(200).json({
             status: 200,
             message: "Tender Fetched Successfully",
@@ -298,21 +308,23 @@ router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), asy
             data: {
                 ...result[0],
                 user: userResult[0],
-                item: itemResult,
-                requisition: requisitionResult[0]
-            }
+                requisition: {
+                    ...requisitionResult[0],
+                    item: itemResult[0],
+                },
+            },
         });
-
     } catch (error) {
         console.error(error);
         return res.status(500).json({
             status: 500,
             message: "Error in fetching tender",
             success: false,
-            data: error
+            data: error,
         });
     }
 });
+
 
 
 
