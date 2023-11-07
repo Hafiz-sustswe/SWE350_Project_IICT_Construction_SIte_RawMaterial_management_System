@@ -343,7 +343,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"requisition_id\" : \"REQ_0004\",\r\n    \"deadline\" : \"2025-2-2\"\r\n\r\n}",
+							"raw": "{\r\n    \"requisition_id\" : \"REQ_0005\",\r\n    \"deadline\" : \"2025-7-3\"\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -384,13 +384,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/requisition/REQ_0004",
+							"raw": "{{base_url}}/tender/TENDER_0005",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"requisition",
-								"REQ_0004"
+								"tender",
+								"TENDER_0005"
 							]
 						}
 					},
@@ -445,7 +445,7 @@
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "deleteTender",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -456,13 +456,157 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/tender/TENDER_0001",
+							"raw": "{{base_url}}/tender/TENDER_0013",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"tender",
-								"TENDER_0001"
+								"TENDER_0013"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Priced_bill",
+			"item": [
+				{
+					"name": "add pricedBill",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tender_id\" : \"TENDER_0005\",\r\n    \"price\" : 100,\r\n    \"status\" : \"PENDING\"\r\n }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/pricedBill//addPricedBill",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pricedBill",
+								"",
+								"addPricedBill"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllPricedBill",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pricedBill/getAllPricedBill",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pricedBill",
+								"getAllPricedBill"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get PB by Id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pricedBill/PRICED_BILL_0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pricedBill",
+								"PRICED_BILL_0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update PB by Id",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n    \"tender_id\" : \"TENDER_0005\",\r\n    \"price\" : 10,\r\n    \"status\" : \"PENDING\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/pricedBill/PRICED_BILL_0002",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pricedBill",
+								"PRICED_BILL_0002"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletePbBYId",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pricedBill/PRICED_BILL_0005",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pricedBill",
+								"PRICED_BILL_0005"
 							]
 						}
 					},
@@ -494,12 +638,12 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": " https://icsrmms.vercel.app",
+			"value": " http://localhost:5000",
 			"type": "string"
 		},
 		{
 			"key": "admin_token",
-			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6MiwiZXhfZW1haWwiOiJoYWZpei5zdXN0MzMzQGdtYWlsLmNvbSIsInJvbGVfaWQiOjEsImlhdCI6MTY5OTI0NjU1NCwiZXhwIjoxNjk5Mjc1MzU0fQ.5V6r2T5SosoqjhqUum79UTow8Q5y5N5ZeogM3apJxCg",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6MiwiZXhfZW1haWwiOiJoYWZpei5zdXN0MzMzQGdtYWlsLmNvbSIsInJvbGVfaWQiOjEsImlhdCI6MTY5OTMxODE4OCwiZXhwIjoxNjk5MzQ2OTg4fQ.ILxaU9AC3vn2xYNtsZz0k-FbCOGidIoOaXMjptO1Ol8",
 			"type": "string"
 		}
 	]

@@ -2,6 +2,7 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken'); // Add this line to import the jwt module
 
 function authenticateToken(req, res, next) {
+   try {
     const token = req.headers.authorization;
    
     if (!token) {
@@ -20,6 +21,11 @@ function authenticateToken(req, res, next) {
         //console.log("Decoded Token:", decoded);
         next();
     });
+    
+   } catch (error) {
+        console.log(error);
+   }
+    
 }
 
 module.exports = { authenticateToken: authenticateToken };

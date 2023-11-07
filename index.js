@@ -5,7 +5,7 @@ const userRoutes = require('./routes/user');
 const itemRoutes = require('./routes/item');
 const requisitionRoutes = require('./routes/requisition');
 const tenderRoutes = require('./routes/tender');
-const pricedBillRoutes = require('./routes/priced_bill');
+const pricedBillRoutes = require('./routes/pricedBill');
 const auth = require('./auth/authHandler');
 
 
@@ -19,11 +19,13 @@ app.use('/',userRoutes);
 app.get("/", (req, res) => {
     res.send("You can create ToDo here!");
   });
-  
+
+app.use('/pricedBill',pricedBillRoutes);
 app.use('/item',itemRoutes);
 app.use('/requisition',requisitionRoutes);
 app.use('/tender',tenderRoutes);
+
 app.use('/auth',auth);
-//app.use('/pricedBill',pricedBillRoutes);
+
 
 module.exports = app;
