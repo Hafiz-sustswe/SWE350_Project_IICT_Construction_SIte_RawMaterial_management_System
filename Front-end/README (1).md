@@ -697,7 +697,12 @@
             "project_name": "this is my project none of your project",
             "location": "this is my location none of your location",
             "created_at": "2023-11-05T10:55:47.000Z",
-            "updated_at": "2023-11-05T10:55:47.000Z"
+            "updated_at": "2023-11-05T10:55:47.000Z",
+                "item": {
+                    "id": "ITEM_0002",
+                    "item_name": "MSPP rodbhai",
+                    "created_at": "2023-11-05T09:51:37.000Z",
+                    "updated_at": "2023-11-06T21:31:37.000Z"
         }
     }
 }
