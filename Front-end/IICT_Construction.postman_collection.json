@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "110c06b8-3c83-4328-8154-b3e9631b5569",
+		"_postman_id": "97769282-7e93-4af0-a370-287fdef0edf9",
 		"name": "IICT_Construction",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "28446667"
@@ -782,6 +782,292 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "inventory",
+			"item": [
+				{
+					"name": "createInventory",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{storeKeeper_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"item_id\": \"ITEM_0002\",\r\n  \"quantity_in\": 20,\r\n  \"quantity_out\": 5\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/inventory/addInventory",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"inventory",
+								"addInventory"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllInventory",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{storeKeeper_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/inventory/getAllInventory",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"inventory",
+								"getAllInventory"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getInventoryByid",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{storeKeeper_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/inventory/INVENTORY_0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"inventory",
+								"INVENTORY_0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateInventory",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{storeKeeper_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity_out\": 400,\r\n    \"quantity_in\": 500\r\n\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/inventory/INVENTORY_0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"inventory",
+								"INVENTORY_0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteInventory",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{storeKeeper_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/inventory/INVENTORY_0005",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"inventory",
+								"INVENTORY_0005"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "report",
+			"item": [
+				{
+					"name": "create Report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{storeKeeper_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"item_id\": \"ITEM_0002\",\r\n    \"start_date\": \"2023-11-11 15:39:19\",\r\n    \"end_date\": \"2023-11-11 16:06:37\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/report/addReport",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"report",
+								"addReport"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateReport",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{storeKeeper_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"item_id\": \"ITEM_0002\",\r\n    \"start_date\": \"2023-11-11 15:39:19\",\r\n    \"end_date\": \"2023-11-11 16:06:33\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/report/REPORT_0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"report",
+								"REPORT_0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all reports",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{storeKeeper_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/report/getAllReports",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"report",
+								"getAllReports"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get report by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{storeKeeper_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/report/REPORT_0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"report",
+								"REPORT_0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete report",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{storeKeeper_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/report/REPORT_0005",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"report",
+								"REPORT_0005"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -818,6 +1104,11 @@
 		{
 			"key": "supplier_token",
 			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTEsImV4X2VtYWlsIjoiaWZhei5haW1hbjMxQGdtYWlsLmNvbSIsInJvbGVfaWQiOjQsImlhdCI6MTY5OTY4NjEyMSwiZXhwIjoxNjk5NzE0OTIxfQ.yFc9qmm0QEHNCFfNP1c3ha8YpRDEutTdVHcqcECNyEI",
+			"type": "string"
+		},
+		{
+			"key": "storeKeeper_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTAsImV4X2VtYWlsIjoiaWZhYWltYW4xN0BnbWFpbC5jb20iLCJyb2xlX2lkIjozLCJpYXQiOjE2OTk2OTUyOTIsImV4cCI6MTY5OTcyNDA5Mn0.q2L9RikmWnwHKuWjQDudJsD-2j2aKl0i3thFt5vfzx0",
 			"type": "string"
 		}
 	]
