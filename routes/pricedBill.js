@@ -28,7 +28,7 @@ async function generatePricedBillId() {
     }
 }
 
-router.post('/addPricedBill', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.post('/addPricedBill', auth.authenticateToken, checkRole.checkRole([4], 'role'), async (req, res) => {
     const { tender_id, price, status } = req.body;
 
     try {
@@ -107,7 +107,7 @@ router.post('/addPricedBill', auth.authenticateToken, checkRole.checkRole([1], '
         });
     }
 });
-router.get('/getAllPricedBill', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.get('/getAllPricedBill', auth.authenticateToken, checkRole.checkRole([1,4], 'role'), async (req, res) => {
     try {
         // Fetch all priced bills
         const selectPricedBillQuery = "SELECT * FROM priced_bill";
@@ -165,7 +165,7 @@ router.get('/getAllPricedBill', auth.authenticateToken, checkRole.checkRole([1],
         });
     }
 });
-router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.get('/:id', auth.authenticateToken, checkRole.checkRole([1,4], 'role'), async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -225,14 +225,62 @@ router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), asy
         });
     }
 });
-router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.patch('/:id', auth.authenticateToken, checkRole.checkRole([4], 'role'), async (req, res) => {
     const { id } = req.params;
     const { tender_id, price, status } = req.body;
-    const creator_id = res.locals.user.ex_id;
 
-    // Calculate total_price based on requisition quantity and price
+    // Check if the priced_bill with the given id exists
+    const checkPricedBillQuery = "SELECT tender_id FROM priced_bill WHERE id = ?";
+    const [pricedBillCheckResult] = await connection.promise().query(checkPricedBillQuery, [id]);
+
+    if (pricedBillCheckResult.length === 0) {
+        return res.status(404).json({
+            status: 404,
+            message: "Priced Bill not found",
+            success: false,
+        });
+    }
+
+    const existingTenderId = pricedBillCheckResult[0].tender_id;
+
+    // Check if the provided tender_id exists
+    if (tender_id !== undefined && tender_id !== existingTenderId) {
+        const tenderCheckQuery = "SELECT id FROM tender WHERE id = ?";
+        const [tenderCheckResult] = await connection.promise().query(tenderCheckQuery, [tender_id]);
+
+        if (tenderCheckResult.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "Tender not found for the given tender_id",
+                success: false,
+            });
+        }
+    }
+
+    const updateColumns = [];
+    const updateValues = [];
+
+    if (tender_id !== undefined) {
+        updateColumns.push('tender_id');
+        updateValues.push(tender_id);
+    }
+
+    if (price !== undefined) {
+        updateColumns.push('price');
+        updateValues.push(price);
+    }
+
+    if (status !== undefined) {
+        updateColumns.push('status');
+        updateValues.push(status);
+    }
+
+    // Build the SET part of the update query dynamically
+    const setClause = updateColumns.map(col => `${col} = ?`).join(', ');
+
+    // Fetch quantity from requisition table based on existingTenderId
     const requisitionQuery = "SELECT quantity FROM requisitions WHERE id IN (SELECT requisition_id FROM tender WHERE id = ?)";
-    const [requisitionResult] = await connection.promise().query(requisitionQuery, [tender_id]);
+    const [requisitionResult] = await connection.promise().query(requisitionQuery, [existingTenderId]);
 
     if (requisitionResult.length === 0) {
         return res.status(404).json({
@@ -245,11 +293,10 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), a
     const quantity = requisitionResult[0].quantity;
 
     // Calculate total_price
-    const total_price = price * quantity;
+    const total_price = price !== undefined ? price * quantity : undefined;
 
-    // Construct the update query with the calculated total_price
-    const updateQuery = "UPDATE priced_bill SET tender_id = ?, creator_id = ?, price = ?, total_price = ?, status = ? WHERE id = ?";
-    const valuesToUpdate = [tender_id, creator_id, price, total_price, status, id];
+    const updateQuery = `UPDATE priced_bill SET ${setClause}${price !== undefined ? ', total_price = ?' : ''} WHERE id = ?`;
+    const valuesToUpdate = price !== undefined ? [...updateValues, total_price, id] : [...updateValues, id];
 
     try {
         const [updateResult] = await connection.promise().query(updateQuery, valuesToUpdate);
@@ -264,19 +311,32 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), a
         }
 
         // Fetch additional details for the updated priced_bill
-        const [result] = await connection.promise().query("SELECT * FROM priced_bill WHERE id = ?", [id]);
+        const getByIdQuery = "SELECT * FROM priced_bill WHERE id = ?";
+        const [result] = await connection.promise().query(getByIdQuery, [id]);
 
-        // Fetch additional details for the tender associated with the priced_bill
-        const [tenderResult] = await connection.promise().query("SELECT * FROM tender WHERE id = ?", [tender_id]);
+        if (!result || result.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "Priced Bill not found",
+                success: false,
+            });
+        }
 
-        // Fetch additional details for the requisition associated with the tender
-        const [requisitionResult] = await connection.promise().query("SELECT * FROM requisitions WHERE id = ?", [tenderResult[0].requisition_id]);
+        // Fetch additional details for the associated tender
+        const selectTenderQuery = "SELECT * FROM tender WHERE id = ?";
+        const [tenderResult] = await connection.promise().query(selectTenderQuery, [result[0].tender_id]);
 
-        // Fetch additional details for the item associated with the requisition
-        const [itemResult] = await connection.promise().query("SELECT * FROM items WHERE id = ?", [requisitionResult[0].item_id]);
+        // Fetch additional details for the associated requisition
+        const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
+        const [requisitionResult] = await connection.promise().query(selectRequisitionQuery, [tenderResult[0].requisition_id]);
+
+        // Fetch additional details for the associated item
+        const selectItemQuery = "SELECT * FROM items WHERE id = ?";
+        const [itemResult] = await connection.promise().query(selectItemQuery, [requisitionResult[0].item_id]);
 
         // Fetch additional details for the user associated with the creator_id
-        const [userResult] = await connection.promise().query("SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?", [creator_id]);
+        const selectUserQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
+        const [userResult] = await connection.promise().query(selectUserQuery, [result[0].creator_id]);
 
         return res.status(200).json({
             status: 200,
@@ -305,7 +365,9 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), a
         });
     }
 });
-router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+
+
+router.delete('/:id', auth.authenticateToken, checkRole.checkRole([4], 'role'), async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -391,6 +453,7 @@ router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), 
         });
     }
 });
+
 
 
 module.exports = router;

@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"ex_email\" : \"hafiz.sust333@gmail.com\",\r\n    \"ex_password\" : \"test\"\r\n}",
+							"raw": "{\r\n    \"ex_email\" : \"ifaz.aiman31@gmail.com\",\r\n    \"ex_password\" : \"ifaz\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -31,6 +31,40 @@
 							"path": [
 								"auth",
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SIgnup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ex_name\" : \"StoreKeeper\", \r\n    \"ex_contactNO\" : \"23434\",\r\n    \"ex_email\" : \"ifaaiman17@gmail.com\",\r\n    \"ex_password\" : \"storekeeper\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/signup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"signup"
 							]
 						}
 					},
@@ -432,13 +466,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/tender/TENDER_0001",
+							"raw": "{{base_url}}/tender/TENDER_0005",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"tender",
-								"TENDER_0001"
+								"TENDER_0005"
 							]
 						}
 					},
@@ -562,13 +596,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "{{admin_token}}",
+								"value": "{{supplier_token}}",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \r\n    \"tender_id\" : \"TENDER_0005\",\r\n    \"price\" : 10,\r\n    \"status\" : \"PENDING\"\r\n\r\n}",
+							"raw": "{\r\n    \r\n    \"price\" : 100,\r\n    \"status\" : \"PENDING\"\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -613,6 +647,141 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "receipt",
+			"item": [
+				{
+					"name": "CreateReceipt",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{supplier_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/receipt//createReceipt",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"receipt",
+								"",
+								"createReceipt"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all receipts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{supplier_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/receipt/getAllReceipts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"receipt",
+								"getAllReceipts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get receipt by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{supplier_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/receipt/RECEIPT_0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"receipt",
+								"RECEIPT_0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateReceipt",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{supplier_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"damaged_quantity\": 100,\r\n  \"receiver_id\": 50\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/receipt/RECEIPT_0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"receipt",
+								"RECEIPT_0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete receipt",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{supplier_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/receipt/RECEIPT_0002",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"receipt",
+								"RECEIPT_0002"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -643,7 +812,12 @@
 		},
 		{
 			"key": "admin_token",
-			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6MiwiZXhfZW1haWwiOiJoYWZpei5zdXN0MzMzQGdtYWlsLmNvbSIsInJvbGVfaWQiOjEsImlhdCI6MTY5OTMxODE4OCwiZXhwIjoxNjk5MzQ2OTg4fQ.ILxaU9AC3vn2xYNtsZz0k-FbCOGidIoOaXMjptO1Ol8",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "supplier_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTEsImV4X2VtYWlsIjoiaWZhei5haW1hbjMxQGdtYWlsLmNvbSIsInJvbGVfaWQiOjQsImlhdCI6MTY5OTY4NjEyMSwiZXhwIjoxNjk5NzE0OTIxfQ.yFc9qmm0QEHNCFfNP1c3ha8YpRDEutTdVHcqcECNyEI",
 			"type": "string"
 		}
 	]

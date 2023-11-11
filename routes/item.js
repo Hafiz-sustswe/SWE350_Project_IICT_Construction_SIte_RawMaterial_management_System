@@ -32,7 +32,7 @@ async function generateItemId() {
 
 // API endpoint to add an item
 //ok
-router.post('/addItem', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.post('/addItem', auth.authenticateToken, checkRole.checkRole([2], 'role'), async (req, res) => {
     const {item_name} = req.body;
 
     try {
@@ -65,7 +65,7 @@ router.post('/addItem', auth.authenticateToken, checkRole.checkRole([1], 'role')
 
 // API endpoint to get items
 //ok
-router.get('/getItem', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.get('/getItem', auth.authenticateToken, checkRole.checkRole([1,2,3], 'role'), async (req, res) => {
     const query = "SELECT * FROM items";
     try {
         const [result] = await connection.promise().query(query);
@@ -79,7 +79,7 @@ router.get('/getItem', auth.authenticateToken, checkRole.checkRole([1], 'role'),
     }
 });
 
-router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.get('/:id', auth.authenticateToken, checkRole.checkRole([1,2,3], 'role'), async (req, res) => {
     const {id} = req.params;
     const query = "SELECT * FROM items where id = ?";
     try {
@@ -99,7 +99,7 @@ router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), asy
 
 // API endpoint to update an item
 //ok
-router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.patch('/:id', auth.authenticateToken, checkRole.checkRole([2], 'role'), async (req, res) => {
     const i = req.body;
     const {id} = req.params;
 
@@ -143,7 +143,7 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), a
 
 // API endpoint to delete an item by ID
 //ok
-router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.delete('/:id', auth.authenticateToken, checkRole.checkRole([2], 'role'), async (req, res) => {
     const {id} = req.params;
 
     const query = "DELETE FROM items WHERE id = ?";

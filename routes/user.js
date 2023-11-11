@@ -8,7 +8,7 @@ const auth = require('../services/authentication');
 const checkRole = require('../services/checkrole');
 
 //ok
-router.get('/AllUser', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.get('/AllUser', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
     const query = "select ex_id , ex_name, ex_email,ex_contactNO,status from tbl_user where role_id = 4";
 
     try {
@@ -21,7 +21,7 @@ router.get('/AllUser', auth.authenticateToken, checkRole.checkRole([1], 'role'),
 });
 
 //ok
-router.get('/userById', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.get('/userById', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
     const user = req.body;
     const query = "select ex_id , ex_name, ex_email,ex_contactNO,status from tbl_user where ex_id = ?";
 
@@ -35,7 +35,7 @@ router.get('/userById', auth.authenticateToken, checkRole.checkRole([1], 'role')
 });
 
 //ok
-router.delete('/deleteUserById', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.delete('/deleteUserById', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
     const user = req.body;
     const query = "DELETE FROM tbl_user WHERE ex_id = ?";
 
@@ -53,7 +53,7 @@ router.delete('/deleteUserById', auth.authenticateToken, checkRole.checkRole([1]
 });
 
 //ok
-router.patch('/approveUser', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.patch('/approveUser', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
     let user = req.body;
     const query = "update tbl_user set status = ? where ex_id = ?";
     try {

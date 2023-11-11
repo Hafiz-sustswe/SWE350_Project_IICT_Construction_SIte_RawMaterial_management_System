@@ -34,7 +34,7 @@ async function generateRequisitionId() {
 }
 
 // API endpoint to add a requisition
-router.post('/addRequisition', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.post('/addRequisition', auth.authenticateToken, checkRole.checkRole([2], 'role'), async (req, res) => {
     const { item_id, quantity, purpose, project_name, location } = req.body;
 
     try {
@@ -88,93 +88,104 @@ router.post('/addRequisition', auth.authenticateToken, checkRole.checkRole([1], 
     }
 });
 
-
-router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.patch('/:id', auth.authenticateToken, checkRole.checkRole([4], 'role'), async (req, res) => {
     const { id } = req.params;
-    const { item_id, creator_id, quantity, purpose, project_name, location } = req.body;
+    const { tender_id, price, status } = req.body;
 
     const updateColumns = [];
     const updateValues = [];
 
-    if (item_id) {
-        updateColumns.push('item_id');
-        updateValues.push(item_id);
+    if (tender_id !== undefined) {
+        updateColumns.push('tender_id');
+        updateValues.push(tender_id);
     }
 
-    if (creator_id) {
-        updateColumns.push('creator_id');
-        updateValues.push(creator_id);
+    if (price !== undefined) {
+        // Calculate total_price based on requisition quantity and price
+        const requisitionQuery = "SELECT quantity FROM requisitions WHERE id IN (SELECT requisition_id FROM tender WHERE id = ?)";
+        const [requisitionResult] = await connection.promise().query(requisitionQuery, [tender_id]);
+
+        if (requisitionResult.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "Requisition not found for the given tender_id",
+                success: false,
+            });
+        }
+
+        const quantity = requisitionResult[0].quantity;
+
+        // Calculate total_price
+        const total_price = price * quantity;
+
+        updateColumns.push('price', 'total_price');
+        updateValues.push(price, total_price);
     }
 
-    if (quantity) {
-        updateColumns.push('quantity');
-        updateValues.push(quantity);
+    if (status !== undefined) {
+        updateColumns.push('status');
+        updateValues.push(status);
     }
 
-    if (purpose) {
-        updateColumns.push('purpose');
-        updateValues.push(purpose);
-    }
-
-    if (project_name) {
-        updateColumns.push('project_name');
-        updateValues.push(project_name);
-    }
-
-    if (location) {
-        updateColumns.push('location');
-        updateValues.push(location);
-    }
-
-    const updateQuery = `UPDATE requisitions SET ${updateColumns.map(col => `${col} = ?`).join(', ')} WHERE id = ?`;
-    const getByIdQuery = "SELECT * FROM requisitions WHERE id = ?";
-    const itemQuery = "SELECT * FROM items WHERE id = ?";
-    const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
+    const updateQuery = `UPDATE priced_bill SET ${updateColumns.map(col => `${col} = ?`).join(', ')} WHERE id = ?`;
+    const getByIdQuery = "SELECT * FROM priced_bill WHERE id = ?";
+    const selectTenderQuery = "SELECT * FROM tender WHERE id = ?";
+    const selectRequisitionQuery = "SELECT * FROM requisitions WHERE id = ?";
+    const selectItemQuery = "SELECT * FROM items WHERE id = ?";
+    const selectUserQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
 
     try {
         const valuesToUpdate = [...updateValues, id];
         const [updateResult] = await connection.promise().query(updateQuery, valuesToUpdate);
 
-        // Check if the requisition with the given id exists
+        // Check if the priced_bill with the given id exists
         if (updateResult.affectedRows === 0) {
             return res.status(404).json({
                 status: 404,
-                message: "Requisition not found or not updated",
+                message: "Priced Bill not found or not updated",
                 success: false,
             });
         }
 
         const [result] = await connection.promise().query(getByIdQuery, [id]);
 
-        // Fetch additional details for the requisition
-        const [itemResult] = await connection.promise().query(itemQuery, [item_id]);
-        const [userResult] = await connection.promise().query(userQuery, [creator_id]);
+        // Fetch additional details for the updated priced_bill
+        const [tenderResult] = await connection.promise().query(selectTenderQuery, [result[0].tender_id]);
+        const [requisitionResult] = await connection.promise().query(selectRequisitionQuery, [tenderResult[0].requisition_id]);
+        const [itemResult] = await connection.promise().query(selectItemQuery, [requisitionResult[0].item_id]);
+        const [userResult] = await connection.promise().query(selectUserQuery, [result[0].creator_id]);
 
         return res.status(200).json({
             status: 200,
-            message: "Requisition Updated Successfully",
+            message: "Priced Bill Updated Successfully",
             success: true,
             data: {
                 ...result[0],
                 user: userResult[0],
-                item: itemResult[0]
-            }
+                tender: {
+                    ...tenderResult[0],
+                    requisition: {
+                        ...requisitionResult[0],
+                        item: itemResult[0],
+                    },
+                },
+            },
         });
 
     } catch (error) {
         console.error(error);
         return res.status(500).json({
             status: 500,
-            message: "Error in updating requisition",
+            message: "Error in updating priced_bill",
             success: false,
-            data: error
+            data: error,
         });
     }
 });
 
 
 // API endpoint to delete a requisition by ID
-router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.delete('/:id', auth.authenticateToken, checkRole.checkRole([2], 'role'), async (req, res) => {
     const { id } = req.params;
 
     const deleteQuery = "DELETE FROM requisitions WHERE id = ?";
@@ -230,7 +241,7 @@ router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), 
 
 
 // API endpoint to get requisitions
-router.get('/getAllRequisition', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.get('/getAllRequisition', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
     const getAllQuery = "SELECT * FROM requisitions";
     const itemQuery = "SELECT * FROM items WHERE id = ?";
     const userQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
@@ -268,7 +279,7 @@ router.get('/getAllRequisition', auth.authenticateToken, checkRole.checkRole([1]
     }
 });
 
-router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.get('/:id', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
     const { id } = req.params;
     const getByIdQuery = "SELECT * FROM requisitions WHERE id = ?";
     const itemQuery = "SELECT * FROM items WHERE id = ?";

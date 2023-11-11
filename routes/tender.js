@@ -227,7 +227,7 @@ router.delete('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), 
 
 // API endpoint to get tenders
 //--done
-router.get('/getAllTender', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.get('/getAllTender', auth.authenticateToken, checkRole.checkRole([1,4], 'role'), async (req, res) => {
     try {
         // Fetch all tenders
         const selectTenderQuery = "SELECT * FROM tender";
@@ -275,7 +275,7 @@ router.get('/getAllTender', auth.authenticateToken, checkRole.checkRole([1], 'ro
         });
     }
 });
-router.get('/:id', auth.authenticateToken, checkRole.checkRole([1], 'role'), async (req, res) => {
+router.get('/:id', auth.authenticateToken, checkRole.checkRole([1,4], 'role'), async (req, res) => {
     const { id } = req.params;
 
     try {
