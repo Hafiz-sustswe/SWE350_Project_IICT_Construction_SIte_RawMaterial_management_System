@@ -662,14 +662,22 @@
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"priced_bill_id\" : \"PRICED_BILL_0001\",\r\n    \"expected_delivery_date\" : \"2023-1-2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{base_url}}/receipt//createReceipt",
+							"raw": "{{base_url}}/receipt/createReceipt",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"receipt",
-								"",
 								"createReceipt"
 							]
 						}
@@ -712,13 +720,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/receipt/RECEIPT_0001",
+							"raw": "{{base_url}}/receipt/RECEIPT_0003",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"receipt",
-								"RECEIPT_0001"
+								"RECEIPT_0003"
 							]
 						}
 					},
@@ -737,7 +745,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"damaged_quantity\": 100,\r\n  \"receiver_id\": 50\r\n}\r\n",
+							"raw": "{\r\n  \"damaged_quantity\": 150,\r\n  \"receiver_id\": 50\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -745,13 +753,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/receipt/RECEIPT_0001",
+							"raw": "{{base_url}}/receipt/RECEIPT_0003",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"receipt",
-								"RECEIPT_0001"
+								"RECEIPT_0003"
 							]
 						}
 					},
@@ -769,13 +777,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/receipt/RECEIPT_0002",
+							"raw": "{{base_url}}/receipt/RECEIPT_0006",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"receipt",
-								"RECEIPT_0002"
+								"RECEIPT_0006"
 							]
 						}
 					},
@@ -787,7 +795,7 @@
 			"name": "inventory",
 			"item": [
 				{
-					"name": "createInventory",
+					"name": "item Issue",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -799,7 +807,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"item_id\": \"ITEM_0002\",\r\n  \"quantity_in\": 20,\r\n  \"quantity_out\": 5\r\n}\r\n",
+							"raw": "{\r\n  \"item_id\": \"ITEM_0002\",\r\n  \"quantity_out\": 5\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -807,13 +815,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/inventory/addInventory",
+							"raw": "{{base_url}}/inventory/itemIssue",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"inventory",
-								"addInventory"
+								"itemIssue"
 							]
 						}
 					},
@@ -1103,12 +1111,12 @@
 		},
 		{
 			"key": "supplier_token",
-			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTEsImV4X2VtYWlsIjoiaWZhei5haW1hbjMxQGdtYWlsLmNvbSIsInJvbGVfaWQiOjQsImlhdCI6MTY5OTY4NjEyMSwiZXhwIjoxNjk5NzE0OTIxfQ.yFc9qmm0QEHNCFfNP1c3ha8YpRDEutTdVHcqcECNyEI",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTEsImV4X2VtYWlsIjoiaWZhei5haW1hbjMxQGdtYWlsLmNvbSIsInJvbGVfaWQiOjQsImlhdCI6MTY5OTc3MTczOSwiZXhwIjoxNjk5ODAwNTM5fQ.X0ihLdQlCLRykXHEZArsaQ7LrPpHVsBwpJCxV3vwznI",
 			"type": "string"
 		},
 		{
 			"key": "storeKeeper_token",
-			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTAsImV4X2VtYWlsIjoiaWZhYWltYW4xN0BnbWFpbC5jb20iLCJyb2xlX2lkIjozLCJpYXQiOjE2OTk2OTUyOTIsImV4cCI6MTY5OTcyNDA5Mn0.q2L9RikmWnwHKuWjQDudJsD-2j2aKl0i3thFt5vfzx0",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTAsImV4X2VtYWlsIjoiaWZhYWltYW4xN0BnbWFpbC5jb20iLCJyb2xlX2lkIjozLCJpYXQiOjE2OTk3OTczOTYsImV4cCI6MTY5OTgyNjE5Nn0.moI_J8mgwvo0cYXdZdZpkU9p35E7EkjOdyuXJqZVnhw",
 			"type": "string"
 		}
 	]

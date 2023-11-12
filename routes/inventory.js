@@ -30,8 +30,8 @@ async function generateInventoryId() {
 }
 
 // Create API endpoint for inventory
-router.post('/addInventory', auth.authenticateToken, async (req, res) => {
-    const { item_id, quantity_in, quantity_out  } = req.body;
+router.post('/itemIssue', auth.authenticateToken,checkRole.checkRole([3], 'role'), async (req, res) => {
+    const { item_id, quantity_out  } = req.body;
     const manager_id = res.locals.user.ex_id;
     try {
         const inventoryId = await generateInventoryId();
@@ -41,7 +41,7 @@ router.post('/addInventory', auth.authenticateToken, async (req, res) => {
 
         const query =
             "INSERT INTO inventory (id, item_id, quantity_in, quantity_out, manager_id) VALUES (?, ?, ?, ?, ?)";
-        const values = [inventoryId, item_id, quantity_in, quantity_out, manager_id];
+        const values = [inventoryId, item_id, 0, quantity_out, manager_id];
 
         const [created_inventory] = await connection.promise().query(query, values);
 
@@ -62,7 +62,7 @@ router.post('/addInventory', auth.authenticateToken, async (req, res) => {
 
             return res.status(200).json({
                 status: 200,
-                message: "Inventory Created Successfully",
+                message: "Item Issued Successfully",
                 success: true,
                 data: {
                     ...result,
@@ -82,7 +82,8 @@ router.post('/addInventory', auth.authenticateToken, async (req, res) => {
         });
     }
 });
-router.get('/getAllInventory', auth.authenticateToken, checkRole.checkRole([3], 'role'), async (req, res) => {
+
+router.get('/getAllInventory', auth.authenticateToken, checkRole.checkRole([1,2,3], 'role'), async (req, res) => {
     try {
         const selectInventoryQuery = "SELECT * FROM inventory";
         const [inventoryResult] = await connection.promise().query(selectInventoryQuery);
@@ -116,7 +117,7 @@ router.get('/getAllInventory', auth.authenticateToken, checkRole.checkRole([3], 
         });
     }
 });
-router.get('/:id', auth.authenticateToken, checkRole.checkRole([3], 'role'), async (req, res) => {
+router.get('/:id', auth.authenticateToken, checkRole.checkRole([1,2,3], 'role'), async (req, res) => {
     const { id } = req.params;
 
     try {

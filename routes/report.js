@@ -29,7 +29,7 @@ async function generateReportId() {
     }
 }
 
-router.post('/addReport', auth.authenticateToken, checkRole.checkRole([3], 'role'), async (req, res) => {
+router.post('/addReport', auth.authenticateToken, checkRole.checkRole([2,3], 'role'), async (req, res) => {
     const { item_id, start_date, end_date } = req.body;
     const creator_id = res.locals.user.ex_id;
 
@@ -109,7 +109,7 @@ router.post('/addReport', auth.authenticateToken, checkRole.checkRole([3], 'role
     }
 });
 
-router.patch('/:id', auth.authenticateToken, checkRole.checkRole([3], 'role'), async (req, res) => {
+router.patch('/:id', auth.authenticateToken, checkRole.checkRole([2,3], 'role'), async (req, res) => {
     const { id } = req.params;
     const { item_id, start_date, end_date } = req.body;
     const creator_id = res.locals.user.ex_id;
@@ -208,7 +208,7 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([3], 'role'), a
 });
 
 // Get all reports
-router.get('/getAllReports', auth.authenticateToken, checkRole.checkRole([3], 'role'), async (req, res) => {
+router.get('/getAllReports', auth.authenticateToken, checkRole.checkRole([1,2,3], 'role'), async (req, res) => {
     try {
         const getAllReportsQuery = "SELECT * FROM report";
         const reports = (await connection.promise().query(getAllReportsQuery))[0];
@@ -246,7 +246,7 @@ router.get('/getAllReports', auth.authenticateToken, checkRole.checkRole([3], 'r
 });
 
 // Get report by ID
-router.get('/:id', auth.authenticateToken, checkRole.checkRole([3], 'role'), async (req, res) => {
+router.get('/:id', auth.authenticateToken, checkRole.checkRole([1,2,3], 'role'), async (req, res) => {
     const { id } = req.params;
     
     try {
@@ -291,7 +291,7 @@ router.get('/:id', auth.authenticateToken, checkRole.checkRole([3], 'role'), asy
 });
 
 // Delete report by ID
-router.delete('/:id', auth.authenticateToken, checkRole.checkRole([3], 'role'), async (req, res) => {
+router.delete('/:id', auth.authenticateToken, checkRole.checkRole([2,3], 'role'), async (req, res) => {
     const { id } = req.params;
 
     try {
