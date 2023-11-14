@@ -225,7 +225,7 @@ router.get('/:id', auth.authenticateToken, checkRole.checkRole([1,4], 'role'), a
         });
     }
 });
-router.patch('/:id', auth.authenticateToken, checkRole.checkRole([4], 'role'), async (req, res) => {
+router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1,4], 'role'), async (req, res) => {
     const { id } = req.params;
     const { tender_id, price, status } = req.body;
 
