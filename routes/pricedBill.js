@@ -29,8 +29,8 @@ async function generatePricedBillId() {
 }
 
 router.post('/addPricedBill', auth.authenticateToken, checkRole.checkRole([4], 'role'), async (req, res) => {
-    const { tender_id, price, status } = req.body;
-
+    const { tender_id, price} = req.body;
+    var status = "PENDING";
     try {
         const pricedBillId = await generatePricedBillId();
         if (!pricedBillId) {

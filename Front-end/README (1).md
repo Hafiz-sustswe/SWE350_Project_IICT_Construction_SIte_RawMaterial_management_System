@@ -868,7 +868,7 @@
 
 # **Priced_bill**
 
-## Endpoint:POST https://icsrmms.vercel.app/pricedBill//addPricedBill
+## Endpoint:POST https://icsrmms.vercel.app/pricedBill/addPricedBill
 
 **Description:** This endpoint is used to add a new priced bill
 
@@ -881,8 +881,7 @@
 ```json
 {
     "tender_id" : "TENDER_0005",
-    "price" : 100,
-    "status" : "PENDING"
+    "price" : 100
  }
 
 ```
@@ -1412,7 +1411,7 @@
 
 # **CreateReceipt**
 
-## Endpoint:POST https://icsrmms.vercel.app/receipt//createReceipt
+## Endpoint:POST https://icsrmms.vercel.app/receipt/createReceipt
 
 **Description:** This endpoint is used to add a new Receipt
 
@@ -1742,8 +1741,7 @@
 **Request Body**
 ```json
 {
-  "damaged_quantity": 100,
-  "receiver_id": 50
+  "damaged_quantity": 100
 }
 ```
 
