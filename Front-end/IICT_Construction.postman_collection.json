@@ -745,7 +745,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"damaged_quantity\": 150,\r\n  \"receiver_id\": 50\r\n}\r\n",
+							"raw": "{\r\n  \"damaged_quantity\": 150\r\n  \r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
