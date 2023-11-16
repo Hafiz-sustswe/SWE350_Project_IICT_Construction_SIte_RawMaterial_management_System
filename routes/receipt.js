@@ -393,7 +393,8 @@ async function generateInventoryId() {
 
 router.patch('/:id', auth.authenticateToken, checkRole.checkRole([3,4], 'role'), async (req, res) => {
     const { id } = req.params;
-    const { priced_bill_id, expected_delivery_date, damaged_quantity, receiver_id } = req.body;
+    const { priced_bill_id, expected_delivery_date, damaged_quantity } = req.body;
+    var receiver_id = res.locals.user.ex_id;
 
     const updateColumns = [];
     const updateValues = [];
