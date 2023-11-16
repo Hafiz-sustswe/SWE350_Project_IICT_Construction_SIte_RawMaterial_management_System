@@ -1734,7 +1734,7 @@
 
 **Description:** This endpoint is used to Update the receipt by by id(RECEIPT_0001)
 
-**Access:** admin
+**Access:** storekeeper and supplier
 
 **Headers:** `Authorization` : [access_token]
 
@@ -1754,93 +1754,44 @@
     "message": "Receipt Updated Successfully",
     "success": true,
     "data": {
-        "id": "RECEIPT_0001",
-        "priced_bill_id": "PRICED_BILL_0002",
+        "id": "RECEIPT_0003",
+        "priced_bill_id": "PRICED_BILL_0001",
         "expected_delivery_date": "2023-12-31T00:00:00.000Z",
-        "damaged_quantity": 100,
+        "damaged_quantity": 150,
         "receiver_id": 50,
-        "created_at": "2023-11-09T06:55:00.000Z",
-        "updated_at": "2023-11-11T08:51:37.000Z",
+        "created_at": "2023-11-09T12:59:41.000Z",
+        "updated_at": "2023-11-12T07:45:35.000Z",
         "creator_id": 51,
-        "priced_bill": {
-            "id": "PRICED_BILL_0002",
-            "tender_id": "TENDER_0005",
-            "creator_id": 51,
-            "price": "100.00",
-            "total_price": "200.00",
-            "status": "PENDING",
-            "created_at": "2023-11-07T00:34:01.000Z",
-            "updated_at": "2023-11-11T08:33:30.000Z",
-            "tender": {
-                "id": "TENDER_0005",
-                "requisition_id": "REQ_0005",
-                "creator_id": 11,
-                "deadline": "2025-02-02T00:00:00.000Z",
-                "created_at": "2023-11-06T05:16:11.000Z",
-                "updated_at": "2023-11-06T21:13:52.000Z",
-                "requisition": {
-                    "id": "REQ_0005",
-                    "creator_id": 2,
-                    "item_id": "ITEM_0002",
-                    "quantity": 2,
-                    "purpose": "this is my purpose none of your purpose",
-                    "project_name": "this is my project none of your project",
-                    "location": "this is my location none of your location",
-                    "created_at": "2023-11-05T10:55:47.000Z",
-                    "updated_at": "2023-11-05T10:55:47.000Z",
-                    "item": {
-                        "id": "ITEM_0002",
-                        "item_name": "MSPP rodbhai",
-                        "created_at": "2023-11-05T09:51:37.000Z",
-                        "updated_at": "2023-11-06T21:31:37.000Z"
-                    }
+        "inventory_creation": {
+            "status": 200,
+            "message": "Inventory Created Successfully",
+            "success": true,
+            "data": {
+                "id": "INVENTORY_0014",
+                "item": {
+                    "id": "ITEM_0002",
+                    "item_name": "MSPP rodbhai",
+                    "created_at": "2023-11-05T09:51:37.000Z",
+                    "updated_at": "2023-11-06T21:31:37.000Z"
+                },
+                "quantity_in": -148,
+                "quantity_out": 0,
+                "manager": {
+                    "ex_id": 50,
+                    "ex_email": "ifaaiman17@gmail.com",
+                    "ex_name": "StoreKeeper"
                 }
-            },
-            "user": {
-                "ex_id": 51,
-                "ex_email": "ifaz.aiman31@gmail.com",
-                "ex_name": "RodSupplier"
             }
-        }
-    }
-}
-```
-
-
-
-## Endpoint: DELETE https://icsrmms.vercel.app/receipt/RECEIPT_0001
-
-**Description:** This endpoint is used to Delete a receipt by id
-
-**Access:** admin
-
-**Headers:** `Authorization` : [access_token]
-
-
-**Response Body**
-```json
-{
-    "status": 200,
-    "message": "Receipt Deleted Successfully",
-    "success": true,
-    "data": {
-        "id": "RECEIPT_0001",
-        "priced_bill_id": "PRICED_BILL_0002",
-        "expected_delivery_date": "2023-12-31T00:00:00.000Z",
-        "damaged_quantity": 100,
-        "receiver_id": 50,
-        "created_at": "2023-11-09T06:55:00.000Z",
-        "updated_at": "2023-11-11T08:51:37.000Z",
-        "creator_id": 51,
+        },
         "priced_bill": {
-            "id": "PRICED_BILL_0002",
+            "id": "PRICED_BILL_0001",
             "tender_id": "TENDER_0005",
-            "creator_id": 51,
+            "creator_id": 2,
             "price": "100.00",
             "total_price": "200.00",
             "status": "PENDING",
-            "created_at": "2023-11-07T00:34:01.000Z",
-            "updated_at": "2023-11-11T08:33:30.000Z",
+            "created_at": "2023-11-07T00:32:10.000Z",
+            "updated_at": "2023-11-07T00:32:10.000Z",
             "tender": {
                 "id": "TENDER_0005",
                 "requisition_id": "REQ_0005",
@@ -1871,18 +1822,94 @@
             "ex_id": 51,
             "ex_email": "ifaz.aiman31@gmail.com",
             "ex_name": "RodSupplier"
+        },
+        "receiver": {
+            "ex_id": 50,
+            "ex_email": "ifaaiman17@gmail.com",
+            "ex_name": "StoreKeeper"
         }
+    }
+}
+```
+
+
+
+## Endpoint: DELETE https://icsrmms.vercel.app/receipt/RECEIPT_0001
+
+**Description:** This endpoint is used to Delete a receipt by id
+
+**Access:** user
+
+**Headers:** `Authorization` : [access_token]
+
+
+**Response Body**
+```json
+{
+    "status": 200,
+    "message": "Receipt Deleted Successfully",
+    "success": true,
+    "data": {
+        "id": "RECEIPT_0005",
+        "priced_bill_id": "PRICED_BILL_0001",
+        "expected_delivery_date": "2023-01-02T00:00:00.000Z",
+        "damaged_quantity": null,
+        "receiver_id": null,
+        "created_at": "2023-11-12T07:50:08.000Z",
+        "updated_at": "2023-11-12T07:50:08.000Z",
+        "creator_id": 51,
+        "priced_bill": {
+            "id": "PRICED_BILL_0001",
+            "tender_id": "TENDER_0005",
+            "creator_id": 2,
+            "price": "100.00",
+            "total_price": "200.00",
+            "status": "PENDING",
+            "created_at": "2023-11-07T00:32:10.000Z",
+            "updated_at": "2023-11-07T00:32:10.000Z",
+            "tender": {
+                "id": "TENDER_0005",
+                "requisition_id": "REQ_0005",
+                "creator_id": 11,
+                "deadline": "2025-02-02T00:00:00.000Z",
+                "created_at": "2023-11-06T05:16:11.000Z",
+                "updated_at": "2023-11-06T21:13:52.000Z",
+                "requisition": {
+                    "id": "REQ_0005",
+                    "creator_id": 2,
+                    "item_id": "ITEM_0002",
+                    "quantity": 2,
+                    "purpose": "this is my purpose none of your purpose",
+                    "project_name": "this is my project none of your project",
+                    "location": "this is my location none of your location",
+                    "created_at": "2023-11-05T10:55:47.000Z",
+                    "updated_at": "2023-11-05T10:55:47.000Z",
+                    "item": {
+                        "id": "ITEM_0002",
+                        "item_name": "MSPP rodbhai",
+                        "created_at": "2023-11-05T09:51:37.000Z",
+                        "updated_at": "2023-11-06T21:31:37.000Z"
+                    }
+                }
+            }
+        },
+        "user": {
+            "ex_id": 51,
+            "ex_email": "ifaz.aiman31@gmail.com",
+            "ex_name": "RodSupplier"
+        },
+        "receiver": []
     }
 }
 ```
 
 # **Inventory**
 
-## Endpoint:POST https://icsrmms.vercel.app/inventory/addInventory
+## Endpoint:POST https://icsrmms.vercel.app//inventory/itemIssue
 
-**Description:** This endpoint is used to add Inventory
+**Description:** This endpoint is used to issue item.
 
-**Access:** admin
+**Access:** storekeeper
 
 **Headers:** `Authorization` : [access_token]
 
@@ -1891,7 +1918,6 @@
 ```json
 {
   "item_id": "ITEM_0002",
-  "quantity_in": 20,
   "quantity_out": 5
 }
 ```
@@ -1900,16 +1926,16 @@
 ```json
 {
     "status": 200,
-    "message": "Inventory Created Successfully",
+    "message": "Item Issued Successfully",
     "success": true,
     "data": {
-        "id": "INVENTORY_0007",
+        "id": "INVENTORY_0013",
         "item_id": "ITEM_0002",
-        "quantity_in": 20,
+        "quantity_in": 0,
         "quantity_out": 5,
         "manager_id": 50,
-        "created_at": "2023-11-11T19:40:50.000Z",
-        "updated_at": "2023-11-11T19:40:50.000Z",
+        "created_at": "2023-11-16T06:59:06.000Z",
+        "updated_at": "2023-11-16T06:59:06.000Z",
         "item": {
             "id": "ITEM_0002",
             "item_name": "MSPP rodbhai",
@@ -2024,26 +2050,6 @@
             }
         },
         {
-            "id": "INVENTORY_0005",
-            "item_id": "ITEM_0002",
-            "quantity_in": 20,
-            "quantity_out": 5,
-            "manager_id": 50,
-            "created_at": "2023-11-11T10:06:35.000Z",
-            "updated_at": "2023-11-11T10:06:35.000Z",
-            "item": {
-                "id": "ITEM_0002",
-                "item_name": "MSPP rodbhai",
-                "created_at": "2023-11-05T09:51:37.000Z",
-                "updated_at": "2023-11-06T21:31:37.000Z"
-            },
-            "manager": {
-                "ex_id": 50,
-                "ex_email": "ifaaiman17@gmail.com",
-                "ex_name": "StoreKeeper"
-            }
-        },
-        {
             "id": "INVENTORY_0006",
             "item_id": "ITEM_0002",
             "quantity_in": 20,
@@ -2071,6 +2077,126 @@
             "manager_id": 50,
             "created_at": "2023-11-11T19:40:50.000Z",
             "updated_at": "2023-11-11T19:40:50.000Z",
+            "item": {
+                "id": "ITEM_0002",
+                "item_name": "MSPP rodbhai",
+                "created_at": "2023-11-05T09:51:37.000Z",
+                "updated_at": "2023-11-06T21:31:37.000Z"
+            },
+            "manager": {
+                "ex_id": 50,
+                "ex_email": "ifaaiman17@gmail.com",
+                "ex_name": "StoreKeeper"
+            }
+        },
+        {
+            "id": "INVENTORY_0008",
+            "item_id": "ITEM_0002",
+            "quantity_in": 95,
+            "quantity_out": 0,
+            "manager_id": 50,
+            "created_at": "2023-11-12T13:31:08.000Z",
+            "updated_at": "2023-11-12T13:31:08.000Z",
+            "item": {
+                "id": "ITEM_0002",
+                "item_name": "MSPP rodbhai",
+                "created_at": "2023-11-05T09:51:37.000Z",
+                "updated_at": "2023-11-06T21:31:37.000Z"
+            },
+            "manager": {
+                "ex_id": 50,
+                "ex_email": "ifaaiman17@gmail.com",
+                "ex_name": "StoreKeeper"
+            }
+        },
+        {
+            "id": "INVENTORY_0009",
+            "item_id": "ITEM_0002",
+            "quantity_in": -148,
+            "quantity_out": 0,
+            "manager_id": 50,
+            "created_at": "2023-11-12T13:36:01.000Z",
+            "updated_at": "2023-11-12T13:36:01.000Z",
+            "item": {
+                "id": "ITEM_0002",
+                "item_name": "MSPP rodbhai",
+                "created_at": "2023-11-05T09:51:37.000Z",
+                "updated_at": "2023-11-06T21:31:37.000Z"
+            },
+            "manager": {
+                "ex_id": 50,
+                "ex_email": "ifaaiman17@gmail.com",
+                "ex_name": "StoreKeeper"
+            }
+        },
+        {
+            "id": "INVENTORY_0010",
+            "item_id": "ITEM_0002",
+            "quantity_in": -148,
+            "quantity_out": 0,
+            "manager_id": 50,
+            "created_at": "2023-11-12T13:43:53.000Z",
+            "updated_at": "2023-11-12T13:43:53.000Z",
+            "item": {
+                "id": "ITEM_0002",
+                "item_name": "MSPP rodbhai",
+                "created_at": "2023-11-05T09:51:37.000Z",
+                "updated_at": "2023-11-06T21:31:37.000Z"
+            },
+            "manager": {
+                "ex_id": 50,
+                "ex_email": "ifaaiman17@gmail.com",
+                "ex_name": "StoreKeeper"
+            }
+        },
+        {
+            "id": "INVENTORY_0011",
+            "item_id": "ITEM_0002",
+            "quantity_in": -148,
+            "quantity_out": 0,
+            "manager_id": 50,
+            "created_at": "2023-11-12T13:45:05.000Z",
+            "updated_at": "2023-11-12T13:45:05.000Z",
+            "item": {
+                "id": "ITEM_0002",
+                "item_name": "MSPP rodbhai",
+                "created_at": "2023-11-05T09:51:37.000Z",
+                "updated_at": "2023-11-06T21:31:37.000Z"
+            },
+            "manager": {
+                "ex_id": 50,
+                "ex_email": "ifaaiman17@gmail.com",
+                "ex_name": "StoreKeeper"
+            }
+        },
+        {
+            "id": "INVENTORY_0012",
+            "item_id": "ITEM_0002",
+            "quantity_in": 0,
+            "quantity_out": 5,
+            "manager_id": 50,
+            "created_at": "2023-11-12T13:57:44.000Z",
+            "updated_at": "2023-11-12T13:57:44.000Z",
+            "item": {
+                "id": "ITEM_0002",
+                "item_name": "MSPP rodbhai",
+                "created_at": "2023-11-05T09:51:37.000Z",
+                "updated_at": "2023-11-06T21:31:37.000Z"
+            },
+            "manager": {
+                "ex_id": 50,
+                "ex_email": "ifaaiman17@gmail.com",
+                "ex_name": "StoreKeeper"
+            }
+        },
+        {
+            "id": "INVENTORY_0013",
+            "item_id": "ITEM_0002",
+            "quantity_in": 0,
+            "quantity_out": 5,
+            "manager_id": 50,
+            "created_at": "2023-11-16T06:59:06.000Z",
+            "updated_at": "2023-11-16T06:59:06.000Z",
             "item": {
                 "id": "ITEM_0002",
                 "item_name": "MSPP rodbhai",
@@ -2130,7 +2256,7 @@
 
 **Description:** This endpoint is used to update the changed Inventory Record
 
-**Access:** admin
+**Access:** storekeeper
 
 **Headers:** `Authorization` : [access_token]
 
@@ -2179,7 +2305,7 @@
 
 **Description:** This endpoint is used to Delete Inventory by id
 
-**Access:** admin
+**Access:** storekeeper
 
 **Headers:** `Authorization` : [access_token]
 
@@ -2219,7 +2345,7 @@
 
 **Description:** This endpoint is used to add a new report
 
-**Access:** admin
+**Access:** admin and storekeeper
 
 **Headers:** `Authorization` : [access_token]
 
@@ -2518,7 +2644,7 @@
 
 **Description:** This endpoint is used to Update the report by id(REPORT_0002)
 
-**Access:** admin
+**Access:** admin and storekeeper
 
 **Headers:** `Authorization` : [access_token]
 
@@ -2570,7 +2696,7 @@
 
 **Description:** This endpoint is used to Delete a report by id
 
-**Access:** admin
+**Access:** admin and storekeeper
 
 **Headers:** `Authorization` : [access_token]
 
