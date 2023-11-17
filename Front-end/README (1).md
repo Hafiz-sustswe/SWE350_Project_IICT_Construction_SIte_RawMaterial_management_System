@@ -74,12 +74,19 @@
 **Response:**
 ```json
 {
-    "ex_id": 3,
-    "ex_name": "admin",
-    "ex_email": "admin@gmail.com",
-    "ex_contactNO": 23434,
-    "status": "true",
-    "role_name": "Super Admin"
+    "status": 200,
+    "message": "User Data fetched successfully",
+    "success": true,
+    "data": {
+        "user": {
+            "ex_id": 47,
+            "ex_name": "SUPER ADMIN",
+            "ex_email": "w6486769@gmail.com",
+            "ex_contactNO": 23434,
+            "status": "true",
+            "role_name": "Super Admin"
+        }
+    }
 }
 ```
 

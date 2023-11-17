@@ -121,7 +121,17 @@ router.get('/seeProfile', auth.authenticateToken,  async (req, res) => {
     const query = "SELECT u.ex_id, u.ex_name, u.ex_email, u.ex_contactNO, u.status, r.role_name FROM tbl_user u JOIN roles r ON u.role_id = r.role_id WHERE u.ex_id = ?";
     try {
         const [results] = await connection.promise().query(query, [userId]);
-        return res.status(200).json(results[0]);
+        return res.status(200).json({
+            status: 200,
+            message: "User Data fetched successfully",
+            success: true,
+            data: {
+                user: {
+                    ...results[0]
+                  
+                },
+            },
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
