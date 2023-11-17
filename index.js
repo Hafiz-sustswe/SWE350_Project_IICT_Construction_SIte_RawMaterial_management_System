@@ -19,9 +19,6 @@ app.use(express.urlencoded({extended : true}));
 app.use(express.json());
 app.use('/',userRoutes);
 
-app.get("/", (req, res) => {
-    res.send("You can create ToDo here!");
-  });
 
 app.use('/pricedBill',pricedBillRoutes);
 app.use('/item',itemRoutes);

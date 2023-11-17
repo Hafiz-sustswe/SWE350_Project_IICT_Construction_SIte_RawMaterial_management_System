@@ -7,9 +7,7 @@ require('dotenv').config();
 const auth = require('../services/authentication');
 const checkRole = require('../services/checkrole');
 
-//ok
-// For /AllUser endpoint
-// For /AllUser endpoint
+
 router.get('/AllUser', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
     const getAllQuery = "SELECT ex_id, ex_name, ex_email, ex_contactNO, role_id, status FROM tbl_user";
 
@@ -151,9 +149,10 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1,2], 'role'),
 //---------------------------
 
 //ok
-router.get('/seeProfile', auth.authenticateToken,  async (req, res) => {
+router.get('/seeProfile',   async (req, res) => {
+    console.log("hi");
     const userId = res.locals.user.ex_id;
-
+    
     const query = "SELECT u.ex_id, u.ex_name, u.ex_email, u.ex_contactNO, u.status, r.role_name FROM tbl_user u JOIN roles r ON u.role_id = r.role_id WHERE u.ex_id = ?";
     try {
         const [results] = await connection.promise().query(query, [userId]);

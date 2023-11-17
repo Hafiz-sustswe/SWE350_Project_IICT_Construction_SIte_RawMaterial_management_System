@@ -739,13 +739,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "{{supplier_token}}",
+								"value": "{{storeKeeper_token}}",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"damaged_quantity\": 150\r\n  \r\n}\r\n",
+							"raw": "{\r\n  \"damaged_quantity\" : 4\r\n  \r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -753,13 +753,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/receipt/RECEIPT_0003",
+							"raw": "{{base_url}}/receipt/RECEIPT_0004",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"receipt",
-								"RECEIPT_0003"
+								"RECEIPT_0004"
 							]
 						}
 					},
@@ -1076,6 +1076,82 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Assign Role",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{super_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"role_id\" : 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllUser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{super_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/AllUser",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"AllUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user by id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "see profile",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -1101,7 +1177,7 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": " http://localhost:5000",
+			"value": "http://localhost:5000",
 			"type": "string"
 		},
 		{
@@ -1111,12 +1187,17 @@
 		},
 		{
 			"key": "supplier_token",
-			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTEsImV4X2VtYWlsIjoiaWZhei5haW1hbjMxQGdtYWlsLmNvbSIsInJvbGVfaWQiOjQsImlhdCI6MTY5OTc3MTczOSwiZXhwIjoxNjk5ODAwNTM5fQ.X0ihLdQlCLRykXHEZArsaQ7LrPpHVsBwpJCxV3vwznI",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTEsImV4X2VtYWlsIjoiaWZhei5haW1hbjMxQGdtYWlsLmNvbSIsInJvbGVfaWQiOjQsImlhdCI6MTcwMDE2MjY4MCwiZXhwIjoxNzAwMTkxNDgwfQ.nb1HIK27jDcRTy6rLjGmfNPVQ8PvoAihM-HrVuD5vPM",
 			"type": "string"
 		},
 		{
 			"key": "storeKeeper_token",
-			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTAsImV4X2VtYWlsIjoiaWZhYWltYW4xN0BnbWFpbC5jb20iLCJyb2xlX2lkIjozLCJpYXQiOjE2OTk3OTczOTYsImV4cCI6MTY5OTgyNjE5Nn0.moI_J8mgwvo0cYXdZdZpkU9p35E7EkjOdyuXJqZVnhw",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NTAsImV4X2VtYWlsIjoiaWZhYWltYW4xN0BnbWFpbC5jb20iLCJyb2xlX2lkIjozLCJpYXQiOjE3MDAyNTE4MTIsImV4cCI6MTcwMDI4MDYxMn0.93Tf12x5CReuVTUdBF0GTDsCRro0_ydQbn-LUWluoos",
+			"type": "string"
+		},
+		{
+			"key": "super_admin",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleF9pZCI6NDcsImV4X2VtYWlsIjoidzY0ODY3NjlAZ21haWwuY29tIiwicm9sZV9pZCI6MSwiaWF0IjoxNzAwMjU5MjA5LCJleHAiOjE3MDAyODgwMDl9._WDTJFJiFxwC5Q5qQRs3sBpvDDMKitFlNWvdqa9SHFw\n",
 			"type": "string"
 		}
 	]
