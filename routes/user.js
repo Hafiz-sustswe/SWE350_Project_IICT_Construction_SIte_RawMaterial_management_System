@@ -8,31 +8,81 @@ const auth = require('../services/authentication');
 const checkRole = require('../services/checkrole');
 
 //ok
+// For /AllUser endpoint
+// For /AllUser endpoint
 router.get('/AllUser', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
-    const query = "select ex_id , ex_name, ex_email,ex_contactNO,status from tbl_user where role_id = 4";
+    const getAllQuery = "SELECT ex_id, ex_name, ex_email, ex_contactNO, role_id, status FROM tbl_user";
 
     try {
-        const [results] = await connection.promise().query(query);
-        return res.status(200).json(results);
+        const [user_results] = await connection.promise().query(getAllQuery);
+
+        if (user_results.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "No users found",
+                success: false,
+                data: null,
+            });
+        }
+
+        const query2 = "SELECT role_name FROM roles WHERE role_id = ?";
+        const usersWithRoles = await Promise.all(user_results.map(async (user) => {
+            const [role_result] = await connection.promise().query(query2, [user.role_id]);
+            return {
+                ...user,
+                role: role_result[0],
+            };
+        }));
+
+        return res.status(200).json({
+            status: 200,
+            message: "Users Fetched Successfully",
+            success: true,
+            data: usersWithRoles,
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
 });
 
-//ok
-router.get('/userById', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
-    const user = req.body;
-    const query = "select ex_id , ex_name, ex_email,ex_contactNO,status from tbl_user where ex_id = ?";
+// For /:id endpoint
+router.get('/:id', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
+    const { id } = req.params;
+    const query = "SELECT ex_id, ex_name, ex_email, ex_contactNO, role_id,status FROM tbl_user WHERE ex_id = ?";
 
     try {
-        const [results] = await connection.promise().query(query, [user.ex_id]);
-        return res.status(200).json(results);
+        const [user_result] = await connection.promise().query(query, [id]);
+
+        if (user_result.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "User not found",
+                success: false,
+                data: null,
+            });
+        }
+
+        const query2 = "SELECT role_name FROM roles WHERE role_id = ?";
+        const [role_result] = await connection.promise().query(query2, [user_result[0].role_id]);
+
+        return res.status(200).json({
+            status: 200,
+            message: "User Fetched Successfully",
+            success: true,
+            data: {
+                user: {
+                    ...user_result[0],
+                    role: role_result[0],
+                },
+            },
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
 });
+
 
 //ok
 router.delete('/deleteUserById', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
@@ -53,20 +103,51 @@ router.delete('/deleteUserById', auth.authenticateToken, checkRole.checkRole([1,
 });
 
 //ok
-router.patch('/approveUser', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
-    let user = req.body;
-    const query = "update tbl_user set status = ? where ex_id = ?";
+router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
+    const { id } = req.params;
+    const { role_id } = req.body;
+
+    const updateQuery = "UPDATE tbl_user SET role_id = ? WHERE ex_id = ?";
+    const selectUserQuery = "SELECT ex_id, ex_name, ex_email, ex_contactNO, role_id, status FROM tbl_user WHERE ex_id = ?";
+    const selectRoleQuery = "SELECT role_name FROM roles WHERE role_id = ?";
+
     try {
-        const [results] = await connection.promise().query(query, [user.status, user.ex_id]);
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ message: "user id not found" });
+        // Update user's role
+        const [updateResults] = await connection.promise().query(updateQuery, [role_id, id]);
+
+        // Check if the user was updated
+        if (updateResults.affectedRows === 0) {
+            return res.status(404).json({ 
+                status: 404,
+                message: "User not found",
+                success: false,
+                data: null,
+            });
         }
-        return res.status(200).json({ message: "User Status updated successfully" });
+
+        // Fetch updated user details
+        const [userResult] = await connection.promise().query(selectUserQuery, [id]);
+
+        // Fetch role details for the updated role
+        const [roleResult] = await connection.promise().query(selectRoleQuery, [role_id]);
+
+        return res.status(200).json({ 
+            status: 200,
+            message: "User Status updated successfully",
+            success: true,
+            data: {
+                user: {
+                    ...userResult[0],
+                    role: roleResult[0],
+                },
+            },
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
 });
+
 //---------------------------
 
 //ok

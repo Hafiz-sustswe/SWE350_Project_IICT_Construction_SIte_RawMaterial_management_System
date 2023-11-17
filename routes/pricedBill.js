@@ -110,8 +110,10 @@ router.post('/addPricedBill', auth.authenticateToken, checkRole.checkRole([4], '
 router.get('/getAllPricedBill', auth.authenticateToken, checkRole.checkRole([1,4], 'role'), async (req, res) => {
     try {
         // Fetch all priced bills
-        const selectPricedBillQuery = "SELECT * FROM priced_bill";
-        const [pricedBills] = await connection.promise().query(selectPricedBillQuery);
+        const creator_id = res.locals.user.ex_id;
+ 
+        const selectPricedBillQuery = "SELECT * FROM priced_bill where creator_id = ?";
+        const [pricedBills] = await connection.promise().query(selectPricedBillQuery[creator_id]);
 
         // Array to store the final result
         const pricedBillDetails = [];

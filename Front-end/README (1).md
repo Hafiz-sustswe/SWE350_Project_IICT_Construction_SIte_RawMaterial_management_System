@@ -87,85 +87,102 @@
 
 **Description:** This endpoint is used to retrieve a list of users.
 
-**Access:** This endpoint is restricted to administrators only.
+**Access:** admin,super admin.
 
 **Headers:** `Authorization` : [access_token]
 **Response:**
-```json
-[
-    {
-        "ex_id": 2,
-        "ex_name": "Test2",
-        "ex_email": "test2@gmail.com",
-        "ex_contactNO": 3904034,
-        "status": "false"
-    },
-    {
-        "ex_id": 3,
-        "ex_name": "Test3",
-        "ex_email": "test3@gmail.com",
-        "ex_contactNO": 3904034,
-        "status": "true"
-    },
-    {
-        "ex_id": 6,
-        "ex_name": "Test7",
-        "ex_email": "sadman23091998@gmail.com",
-        "ex_contactNO": 3904034,
-        "status": "true"
-    }
-]
-
-
+{
+    "status": 200,
+    "message": "Users Fetched Successfully",
+    "success": true,
+    "data": [
+        {
+            "ex_id": 2,
+            "ex_name": "forhad",
+            "ex_email": "hafiz.sust333@gmail.com",
+            "ex_contactNO": 23434,
+            "role_id": 2,
+            "status": "2",
+            "role": {
+                "role_name": "Admin"
+            }
+        },
+        {
+            "ex_id": 8,
+            "ex_name": "aasdf",
+            "ex_email": "fshossaindsdfasdffasdfaf10@gmail.comadf",
+            "ex_contactNO": 3434134,
+            "role_id": 1,
+            "status": "true",
+            "role": {
+                "role_name": "Super Admin"
+            }
+        }
+    ]
+}
 ```
 
-## Endpoint: GET https://icsrmms.vercel.app/userById
+## Endpoint: GET https://icsrmms.vercel.app/2
 
 **Description:** This endpoint is used to retrieve a single user by their ID.
 
-**Access:** This endpoint is restricted to administrators only.
+**Access:** admin ,super admin
 
 **Headers:** `Authorization` : [access_token]
 
-**Request Body:**
-```json
-{
-  "ex_id": 6
-}
-```
 **Response:**
-```json
 {
-        "ex_id": 6,
-        "ex_name": "Test7",
-        "ex_email": "sadman23091998@gmail.com",
-        "ex_contactNO": 3904034,
-        "status": "true"
+    "status": 200,
+    "message": "User Fetched Successfully",
+    "success": true,
+    "data": {
+        "user": {
+            "ex_id": 2,
+            "ex_name": "forhad",
+            "ex_email": "hafiz.sust333@gmail.com",
+            "ex_contactNO": 23434,
+            "role_id": 2,
+            "status": "2",
+            "role": {
+                "role_name": "Admin"
+            }
+        }
     }
-```
+}
 
 
-## Endpoint: PATCH https://icsrmms.vercel.app/approveUser
+## Endpoint: PATCH https://icsrmms.vercel.app/2
 
-**Description:** This endpoint allows to approve a user .
+**Description:** This endpoint allows to approve a user / change role.
 
-**Access:** This endpoint is restricted to administrators only.
+**Access:** super admin
 
 **Headers:** `Authorization` : [access_token]
 
 **Request Body:**
 
 {
-    "ex_id" : 6,
-    "status" : "true"
+    "role_id" : 2
 }
 **Response Body:**
-
 {
-   
-    "message": "user status updated successfully"
+    "status": 200,
+    "message": "User Status updated successfully",
+    "success": true,
+    "data": {
+        "user": {
+            "ex_id": 2,
+            "ex_name": "forhad",
+            "ex_email": "hafiz.sust333@gmail.com",
+            "ex_contactNO": 23434,
+            "role_id": 2,
+            "status": "2",
+            "role": {
+                "role_name": "Admin"
+            }
+        }
+    }
 }
-
 
 ## Endpoint: DELETE https://icsrmms.vercel.app/deleteUserById
 

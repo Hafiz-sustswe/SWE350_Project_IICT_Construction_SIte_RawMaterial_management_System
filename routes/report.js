@@ -59,6 +59,15 @@ router.post('/addReport', auth.authenticateToken, checkRole.checkRole([2,3], 'ro
        
         // Calculate balance
         const balance = total_quantity_in - total_quantity_out;
+        if(balance < 0)
+        {
+            return res.status(500).json({
+                status: 500,
+                message: "Insufficient Balance",
+                success: false,
+               
+            });
+        }
 
         // Generate a unique ID for the report
         const id = await generateReportId();

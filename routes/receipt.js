@@ -474,6 +474,14 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([3,4], 'role'),
         
         const inventoryResult = await addInventoryFromReceipt(tenderResult[0].requisition_id, damaged_quantity, receiver_id,requisitionResult[0].item_id );
        
+        if(!inventoryResult)
+        {
+            return res.status(500).json({
+                status: 500,
+                message: "Invalid Damaged quantity",
+                success: false,
+            });
+        }
 
         // Fetch additional details for the user associated with the creator_id
         const selectUserQuery = "SELECT ex_id, ex_email, ex_name FROM tbl_user WHERE ex_id = ?";
@@ -536,6 +544,11 @@ async function addInventoryFromReceipt(requisition_id, damaged_quantity, receive
 
         // Calculate quantity_in by subtracting damaged_quantity from requisition quantity
         const quantity_in = requisitionResult[0].quantity - damaged_quantity;
+
+        if(quantity_in < 0)
+        {
+            return false;
+        }
 
         // Generate a unique ID for the inventory
         const inventory_id = await generateInventoryId();
