@@ -45,41 +45,6 @@ router.get('/AllUser', auth.authenticateToken, checkRole.checkRole([1,2], 'role'
 });
 
 // For /:id endpoint
-router.get('/:id', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
-    const { id } = req.params;
-    const query = "SELECT ex_id, ex_name, ex_email, ex_contactNO, role_id,status FROM tbl_user WHERE ex_id = ?";
-
-    try {
-        const [user_result] = await connection.promise().query(query, [id]);
-
-        if (user_result.length === 0) {
-            return res.status(404).json({
-                status: 404,
-                message: "User not found",
-                success: false,
-                data: null,
-            });
-        }
-
-        const query2 = "SELECT role_name FROM roles WHERE role_id = ?";
-        const [role_result] = await connection.promise().query(query2, [user_result[0].role_id]);
-
-        return res.status(200).json({
-            status: 200,
-            message: "User Fetched Successfully",
-            success: true,
-            data: {
-                user: {
-                    ...user_result[0],
-                    role: role_result[0],
-                },
-            },
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
-    }
-});
 
 
 //ok
@@ -149,8 +114,8 @@ router.patch('/:id', auth.authenticateToken, checkRole.checkRole([1,2], 'role'),
 //---------------------------
 
 //ok
-router.get('/seeProfile',   async (req, res) => {
-    console.log("hi");
+router.get('/seeProfile', auth.authenticateToken,  async (req, res) => {
+    
     const userId = res.locals.user.ex_id;
     
     const query = "SELECT u.ex_id, u.ex_name, u.ex_email, u.ex_contactNO, u.status, r.role_name FROM tbl_user u JOIN roles r ON u.role_id = r.role_id WHERE u.ex_id = ?";
@@ -188,6 +153,42 @@ router.post('/changePassword', auth.authenticateToken, async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ success: false, message: "Failed to update password" });
+    }
+});
+
+router.get('/:id', auth.authenticateToken, checkRole.checkRole([1,2], 'role'), async (req, res) => {
+    const { id } = req.params;
+    const query = "SELECT ex_id, ex_name, ex_email, ex_contactNO, role_id,status FROM tbl_user WHERE ex_id = ?";
+
+    try {
+        const [user_result] = await connection.promise().query(query, [id]);
+
+        if (user_result.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: "User not found",
+                success: false,
+                data: null,
+            });
+        }
+
+        const query2 = "SELECT role_name FROM roles WHERE role_id = ?";
+        const [role_result] = await connection.promise().query(query2, [user_result[0].role_id]);
+
+        return res.status(200).json({
+            status: 200,
+            message: "User Fetched Successfully",
+            success: true,
+            data: {
+                user: {
+                    ...user_result[0],
+                    role: role_result[0],
+                },
+            },
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
     }
 });
 
