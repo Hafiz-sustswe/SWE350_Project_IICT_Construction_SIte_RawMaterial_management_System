@@ -3,6 +3,7 @@ const connection = require('../connection');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
 
 require('dotenv').config();
 const auth = require('../services/authentication');
@@ -17,6 +18,9 @@ const transporter = nodemailer.createTransport({
     debug: true,
 });
 
+
+
+// For /signup endpoint
 router.post('/signup', async (req, res) => {
     const user = req.body;
     let query = "select ex_email,ex_password,role_id,status,ex_id from tbl_user where ex_email = ?";
@@ -25,9 +29,11 @@ router.post('/signup', async (req, res) => {
         const [results] = await connection.promise().query(query, [user.ex_email]);
 
         if (results.length <= 0) {
+            const hashedPassword = await bcrypt.hash(user.ex_password, 10);
+
             query = "insert into tbl_user(ex_name,ex_contactNO,ex_email,ex_password,status,role_id) values(?,?,?,?,'true',4);";
             
-            const [result] = await connection.promise().query(query, [user.ex_name, user.ex_contactNO, user.ex_email, user.ex_password]);
+            const [result] = await connection.promise().query(query, [user.ex_name, user.ex_contactNO, user.ex_email, hashedPassword]);
             const userId = result.insertId;
 
             const token = jwt.sign({ ex_id: userId, ex_email: user.ex_email, role_id: 1 }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
@@ -62,10 +68,7 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-router.get('/checkToken', auth.authenticateToken, checkRole.checkRole, (req, res) => {
-    return res.status(200).json({ message: "true" });
-});
-
+// For /login endpoint
 router.post('/login', async (req, res) => {
     const user = req.body;
     let query = "select ex_id, ex_email, ex_password, role_id, status from tbl_user where ex_email = ?";
@@ -73,11 +76,17 @@ router.post('/login', async (req, res) => {
     try {
         const [result] = await connection.promise().query(query, [user.ex_email]);
 
-        if (result.length <= 0 || result[0].ex_password != user.ex_password) {
+        if (result.length <= 0) {
+            return res.status(401).json({ message: "Incorrect username or password" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(user.ex_password, result[0].ex_password);
+
+        if (!isPasswordValid) {
             return res.status(401).json({ message: "Incorrect username or password" });
         } else if (result[0].status == 'false') {
             return res.status(401).json({ message: "Wait for admin approval" });
-        } else if (result[0].ex_password == user.ex_password) {
+        } else {
             const response = { ex_id: result[0].ex_id, ex_email: result[0].ex_email, role_id: result[0].role_id };
             const accessToken = jwt.sign(response, process.env.ACCESS_TOKEN, { expiresIn: '8h' });
 
@@ -87,13 +96,16 @@ router.post('/login', async (req, res) => {
                 message: "User Login Successful",
                 token: accessToken
             });
-        } else {
-            return res.status(400).json({ message: "Something went wrong" });
         }
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
+});
+
+
+router.get('/checkToken', auth.authenticateToken, checkRole.checkRole, (req, res) => {
+    return res.status(200).json({ message: "true" });
 });
 
 module.exports = router;

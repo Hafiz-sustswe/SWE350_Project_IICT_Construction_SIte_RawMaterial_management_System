@@ -4,6 +4,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+const bcrypt = require('bcrypt');
 const auth = require('../services/authentication');
 const checkRole = require('../services/checkrole');
 
@@ -150,14 +151,26 @@ router.post('/changePassword', auth.authenticateToken, async (req, res) => {
     const user = req.body;
     const email = res.locals.user.ex_email;
 
-    const query = "SELECT * FROM tbl_user WHERE ex_email = ? AND ex_password = ?";
+    const query = "SELECT ex_password FROM tbl_user WHERE ex_email = ?";
+    
     try {
-        const [results] = await connection.promise().query(query, [email, user.oldPassword]);
+        const [results] = await connection.promise().query(query, [email]);
+
         if (results.length === 0) {
+            return res.status(400).json({ success: false, message: "User not found" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(user.oldPassword, results[0].ex_password);
+
+        if (!isPasswordValid) {
             return res.status(400).json({ success: false, message: "Incorrect old password" });
         } else {
+            // Hash the new password before updating
+            const hashedNewPassword = await bcrypt.hash(user.newPassword, 10);
+            
             const updateQuery = "UPDATE tbl_user SET ex_password = ? WHERE ex_email = ?";
-            const [updateResults] = await connection.promise().query(updateQuery, [user.newPassword, email]);
+            const [updateResults] = await connection.promise().query(updateQuery, [hashedNewPassword, email]);
+
             return res.status(200).json({ success: true, message: "Password updated successfully" });
         }
     } catch (error) {
@@ -219,24 +232,23 @@ var transporter = nodemailer.createTransport(
 router.post("/forgotPassword", async (req, res) => {
     const user = req.body;
     let query = "select ex_email, ex_password from tbl_user where ex_email=?";
+    
     try {
         const [results] = await connection.promise().query(query, [user.ex_email]);
+
         if (results.length <= 0) {
             return res.status(200).json({
                 message: "Password Successfully sent to your Email",
             });
         } else {
+            // Generate a temporary token for password reset
+            const tempToken = jwt.sign({ ex_email: user.ex_email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
+
             let mailOptions = {
                 from: process.env.EMAIL,
                 to: results[0].ex_email,
                 subject: "Password retrieval by ICSRMMS",
-                html:
-                    "<p>Your login details for IICT Construction Site Raw <br> Email: " +
-                    results[0].ex_email +
-                    "<br> Password: " +
-                    results[0].ex_password +
-                    "<br> <a href='http://localhost:8088'>Click Here to Login</a>" +
-                    "</p>",
+                html: `<p>Click the link to reset your password: <br> <a href='http://localhost:8088/changePassword/${tempToken}'>Reset Password</a></p>`,
             };
 
             transporter.sendMail(mailOptions, (error, info) => {
@@ -246,7 +258,7 @@ router.post("/forgotPassword", async (req, res) => {
                     console.log(info.response);
                     console.log(" \n Email sent");
                     return res.status(200).json({
-                        message: "Password sent to your email",
+                        message: "Password reset instructions sent to your email",
                     });
                 }
             });
@@ -256,4 +268,5 @@ router.post("/forgotPassword", async (req, res) => {
         return res.status(500).json({ error });
     }
 });
+
 module.exports = router;
