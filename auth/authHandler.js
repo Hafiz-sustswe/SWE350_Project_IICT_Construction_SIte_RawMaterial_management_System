@@ -31,7 +31,7 @@ router.post('/signup', async (req, res) => {
         if (results.length <= 0) {
             const hashedPassword = await bcrypt.hash(user.ex_password, 10);
 
-            query = "insert into tbl_user(ex_name,ex_contactNO,ex_email,ex_password,status,role_id) values(?,?,?,?,'true',4);";
+            query = "insert into tbl_user(ex_name,ex_contactNO,ex_email,ex_password,status,role_id) values(?,?,?,?,'true',2);";
             
             const [result] = await connection.promise().query(query, [user.ex_name, user.ex_contactNO, user.ex_email, hashedPassword]);
             const userId = result.insertId;
