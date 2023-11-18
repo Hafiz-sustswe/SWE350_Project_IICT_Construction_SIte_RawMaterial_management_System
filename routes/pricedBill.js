@@ -112,8 +112,8 @@ router.get('/getAllPricedBill', auth.authenticateToken, checkRole.checkRole([1,4
         // Fetch all priced bills
         const creator_id = res.locals.user.ex_id;
  
-        const selectPricedBillQuery = "SELECT * FROM priced_bill where creator_id = ?";
-        const [pricedBills] = await connection.promise().query(selectPricedBillQuery[creator_id]);
+        const selectPricedBillQuery = "SELECT * FROM priced_bill ";
+        const [pricedBills] = await connection.promise().query(selectPricedBillQuery);
 
         // Array to store the final result
         const pricedBillDetails = [];
